@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-translate-key="reviewsPageTitle">用户评价 - llama4中文版 | 国内高速访问与AI模型下载</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+</head>
+<body>
+    <div id="custom-mouse-pointer"></div>
+    <div id="page-particles-js"></div>
+    <!-- <canvas id="page-confetti-canvas"></canvas> -->
+    <div id="animated-lines-bg">
+        <div class="flashing-line line-1"></div>
+        <div class="flashing-line line-2"></div>
+        <div class="flashing-line line-3"></div>
+        <div class="flashing-line line-4"></div>
+        <div class="flashing-line line-5"></div>
+        <div class="flashing-line line-6"></div>
+    </div>
+    <div class="container">
+        <!-- 侧边栏 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2 data-translate-key="sidebarAppName">llama4</h2>
+            </div>
+            <div class="sidebar-content">
+                <div class="nav-links">
+                    <a href="login.html" class="login-btn"><i class="fas fa-sign-in-alt"></i> <span data-translate-key="sidebarLoginText">点击登录</span></a>
+                    <a href="index.html"><i class="fas fa-comments"></i> <span data-translate-key="sidebarChat">对话</span></a>
+                    <a href="reviews.html" class="active"><i class="fas fa-star"></i> <span data-translate-key="sidebarReviews">用户评价</span></a>
+                </div>
+                <div class="history-header">
+                    <h3 data-translate-key="historyTitle">历史对话</h3>
+                    <button class="new-chat-btn"><i class="fas fa-plus"></i> <span data-translate-key="newChatButton">新对话</span></button>
+                </div>
+                <div class="chat-history">
+                    <!-- 历史对话将通过JavaScript动态添加 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <div class="reviews-container">
+                <div class="reviews-header">
+                    <div class="title-container">
+                        <h1 data-translate-key="reviewsMainTitle" class="main-title">用户评价</h1>
+                        <button id="lang-toggle-btn" aria-label="Toggle Language">
+                            <span lang="zh-CN">EN</span>
+                            <span lang="en" style="display: none;">中文</span>
+                        </button>
+                    </div>
+                    <p data-translate-key="reviewsSubtitle" class="subtitle">来自真实用户的llama4使用体验</p>
+                </div>
+                
+                <!-- Marquee Structure -->
+                <div class="marquee-wrapper">
+                    <div class="marquee-column" id="marquee-column-1">
+                        <!-- Reviews will be dynamically inserted here -->
+                    </div>
+                    <div class="marquee-column" id="marquee-column-2">
+                        <!-- Reviews will be dynamically inserted here -->
+                    </div>
+                    <div class="marquee-fade-top"></div>
+                    <div class="marquee-fade-bottom"></div>
+                </div>
+
+                <!-- Existing reviews-grid will be used by JS to source reviews, then hidden/emptied -->
+                <div class="reviews-grid" style="display: none;"> <!-- Initially hide or prepare to hide via JS -->
+                    <!-- 编程能力评价 -->
+                    <div class="review-card" data-category="coding">
+                        <div class="review-header">
+                            <img src="images/北.jpg" alt="用户头像">
+                            <div class="review-user">
+                                <h3 data-translate-key="userNameBei">北.</h3>
+                                <div class="rating">
+                                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="review-text" data-translate-key="reviewText01">作为一名资深开发者，我对llama4的编程能力印象深刻。它不仅能理解复杂的代码结构，还能提供优化建议和修复bug。最令我惊讶的是它能够根据我的描述自动生成完整的功能模块，大大提高了我的开发效率。</p>
+                        <div class="review-tags">
+                            <span data-translate-key="tagCodingAbility">编程能力</span><span data-translate-key="tagCodeGeneration">代码生成</span>
+                        </div>
+                    </div>
+                    <div class="review-card" data-category="coding">
+                        <div class="review-header">
+                            <img src="images/pan.jpg" alt="用户头像">
+                            <div class="review-user">
+                                <h3 data-translate-key="userNamePanPan">Pan Pan</h3>
+                                <div class="rating">
+                                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="review-text" data-translate-key="reviewText02">llama4在多语言编程支持方面表现出色，从Python到JavaScript，从Java到Rust，几乎无所不能。它能够理解我的项目结构，并提供符合项目风格的代码。特别是在处理算法问题时，它能提供多种解决方案并分析时间复杂度，帮助我选择最优解。</p>
+                        <div class="review-tags">
+                            <span data-translate-key="tagMultiLanguageSupport">多语言支持</span><span data-translate-key="tagAlgorithmOptimization">算法优化</span>
+                        </div>
+                    </div>
+                    <!-- 理解能力评价 -->
+                    <div class="review-card" data-category="understanding">
+                        <div class="review-header">
+                            <img src="images/浅.jpg" alt="用户头像">
+                            <div class="review-user">
+                                <h3 data-translate-key="userNameQianQingSen">浅清森</h3>
+                                <div class="rating">
+                                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="review-text" data-translate-key="reviewText03">作为一名研究人员，我经常需要AI助手帮我理解和总结复杂的学术论文。llama4的理解能力令人惊叹，它不仅能准确把握论文的核心观点，还能将复杂概念简化解释，甚至能够指出不同研究之间的联系和差异。这大大提高了我的研究效率。</p>
+                        <div class="review-tags">
+                            <span data-translate-key="tagAcademicUnderstanding">学术理解</span><span data-translate-key="tagConceptParsing">概念解析</span>
+                        </div>
+                    </div>
+                    <div class="review-card" data-category="understanding">
+                        <div class="review-header">
+                            <img src="images/芳.jpg" alt="用户头像">
+                            <div class="review-user">
+                                <h3 data-translate-key="userNameFangMing">芳铭</h3>
+                                <div class="rating">
+                                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="review-text" data-translate-key="reviewText04">llama4能够理解我提出的各种问题，即使是模糊不清的描述也能准确把握我的意图。最让我印象深刻的是它的上下文理解能力，在长时间对话中能够记住之前的内容，并基于整个对话历史给出连贯的回答。这种体验让我感觉像是在和一个真实的导师交流。</p>
+                        <div class="review-tags">
+                            <span data-translate-key="tagContextualUnderstanding">上下文理解</span><span data-translate-key="tagIntentRecognition">意图识别</span>
+                        </div>
+                    </div>
+                    <!-- 图像处理能力评价 (旧) -->
+                    <div class="review-card" data-category="image">
+                        <div class="review-header">
+                            <img src="images/卷.jpg" alt="用户头像">
+                            <div class="review-user">
+                                <h3 data-translate-key="userNameChenJuanJuan">陈卷卷</h3>
+                                <div class="rating">
+                                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="review-text" data-translate-key="reviewText05">作为一名UI设计师，我经常需要AI帮我分析和优化设计。llama4的图像处理能力非常强大，它能够准确识别图像中的元素，分析设计布局，甚至能根据我的描述生成设计草图。这大大加速了我的设计流程，让我能够更快地将创意变为现实。</p>
+                        <div class="review-tags">
+                            <span data-translate-key="tagImageAnalysis">图像分析</span><span data-translate-key="tagDesignAssistance">设计辅助</span>
+                        </div>
+                    </div>
+                    <div class="review-card" data-category="image">
+                        <div class="review-header">
+                            <img src="images/娅.jpg" alt="用户头像">
+                            <div class="review-user">
+                                <h3 data-translate-key="userNameIoioYa">ioio娅</h3>
+                                <div class="rating">
+                                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="review-text" data-translate-key="reviewText06">llama4对图像的理解和处理能力令我惊讶。它不仅能分析照片的构图和色彩，还能识别照片中的场景和物体，甚至能根据我的描述生成创意图像。作为一名专业摄影师，这些功能极大地帮助了我的创作过程。</p>
+                        <div class="review-tags">
+                            <span data-translate-key="tagImageGeneration">图像生成</span><span data-translate-key="tagPhotoAnalysis">照片分析</span>
+                        </div>
+                    </div>
+                    <!-- 图像解析评价 -->
+                    <div class="review-card" data-category="image-analysis">
+                        <div class="review-header">
+                            <img src="images/燕.jpg" alt="用户头像">
+                            <div class="review-user">
+                                <h3 data-translate-key="userNameChuiPaoPaoYanYan">吹个泡泡</h3>
+                                <div class="rating">
+                                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="review-text" data-translate-key="reviewText07">Llama4的图像解析能力非常出色。我上传了一些包含复杂场景和微小细节的图片，它都能准确识别关键元素并进行分类。对于我的研究工作来说，这是一个巨大的帮助，节省了大量手动标记的时间。</p>
+                        <div class="review-tags">
+                            <span data-translate-key="tagImageParsing">图像解析</span><span data-translate-key="tagObjectDetection">目标检测</span>
+                        </div>
+                    </div>
+                    <div class="review-card" data-category="image-analysis">
+                        <div class="review-header">
+                            <img src="images/南.jpg" alt="用户头像">
+                            <div class="review-user">
+                                <h3 data-translate-key="userNameNanshan">南山月半弯</h3>
+                                <div class="rating">
+                                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="review-text" data-translate-key="reviewText08">我使用Llama4进行医学影像分析，它在识别微小病灶方面的准确率令人印象深刻。结合其API，我们可以快速搭建原型系统，辅助医生进行初步筛查，潜力巨大。</p>
+                        <div class="review-tags">
+                            <span data-translate-key="tagImageParsing">图像解析</span><span data-translate-key="tagMedicalImaging">医学影像</span>
+                        </div>
+                    </div>
+                    <!-- AI绘画 (文生图) 评价 -->
+                    <div class="review-card" data-category="text-to-image">
+                        <div class="review-header">
+                            <img src="images/赵.jpg" alt="用户头像">
+                            <div class="review-user">
+                                <h3 data-translate-key="userNameZhaoZhaoZhao">赵赵赵</h3>
+                                <div class="rating">
+                                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="review-text" data-translate-key="reviewText09">我对Llama4的AI绘画功能感到非常惊喜！只需要简单的文字描述，它就能生成富有创意和艺术感的图像。无论是抽象概念还是具体场景，它都能很好地理解并呈现出来。这为我的艺术创作打开了新的大门。</p>
+                        <div class="review-tags">
+                            <span data-translate-key="tagAIPainting">AI绘画</span><span data-translate-key="tagTextToImage">文生图</span><span data-translate-key="tagCreativeGeneration">创意生成</span>
+                        </div>
+                    </div>
+                     <div class="review-card" data-category="text-to-image">
+                        <div class="review-header">
+                            <img src="images/吴.jpg" alt="用户头像">
+                            <div class="review-user">
+                                <h3 data-translate-key="userNameDoubleWu">Double吴</h3>
+                                <div class="rating">
+                                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="review-text" data-translate-key="reviewText10">作为一名插画师，我尝试了Llama4的文生图功能，效果超出了我的预期。它生成的图像风格多样，细节处理也很到位。虽然有时需要调整几次描述才能得到完美结果，但总体来说是一个非常强大的灵感和草图工具。</p>
+                        <div class="review-tags">
+                            <span data-translate-key="tagAIPainting">AI绘画</span><span data-translate-key="tagIllustrationAssistance">插画辅助</span>
+                        </div>
+                    </div>
+                    <!-- 以图生图评价 -->
+                    <div class="review-card" data-category="image-to-image">
+                        <div class="review-header">
+                            <img src="images/俊.jpg" alt="用户头像">
+                            <div class="review-user">
+                                <h3 data-translate-key="userNameJunWei">向前</h3>
+                                <div class="rating">
+                                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="review-text" data-translate-key="reviewText11">Llama4的以图生图功能太棒了！我可以上传一张图片作为基础，然后让AI根据我的要求进行风格转换或元素添加。这对于快速生成多种设计方案非常有用，极大地提升了我的工作效率。</p>
+                        <div class="review-tags">
+                            <span data-translate-key="tagImageToImage">以图生图</span><span data-translate-key="tagStyleTransfer">风格迁移</span><span data-translate-key="tagImageEditing">图像编辑</span>
+                        </div>
+                    </div>
+                     <div class="review-card" data-category="image-to-image">
+                        <div class="review-header">
+                            <img src="images/沉.jpg" alt="用户头像">
+                            <div class="review-user">
+                                <h3 data-translate-key="userNameChenMoShiJin">沉默是金</h3>
+                                <div class="rating">
+                                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="review-text" data-translate-key="reviewText12">我常用Llama4的以图生图功能来为我的社交媒体帖子创作独特的配图。只需要一张简单的草图或者照片，它就能变换出各种有趣的风格，让我的内容更吸引眼球。</p>
+                        <div class="review-tags">
+                            <span data-translate-key="tagImageToImage">以图生图</span><span data-translate-key="tagCreativeGraphics">创意配图</span>
+                        </div>
+                    </div>
+                    <!-- 创意能力评价 -->
+                    <div class="review-card" data-category="creative">
+                        <div class="review-header">
+                            <img src="images/H.jpg" alt="用户头像">
+                            <div class="review-user">
+                                <h3 data-translate-key="userNameHQH">HQH</h3>
+                                <div class="rating">
+                                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="review-text" data-translate-key="reviewText13">作为一名职业作家，我对llama4的创意能力印象深刻。它能够根据简单的提示生成丰富多彩的故事情节，创造出独特的角色和场景，甚至能够模仿不同的写作风格。这不仅帮助我克服了创作瓶颈，还为我的写作提供了新的灵感。</p>
+                        <div class="review-tags">
+                            <span data-translate-key="tagStoryCreation">故事创作</span><span data-translate-key="tagStyleMimicking">风格模仿</span>
+                        </div>
+                    </div>
+                     <div class="review-card" data-category="creative">
+                        <div class="review-header">
+                            <img src="images/秋.jpg" alt="用户头像">
+                            <div class="review-user">
+                                <h3 data-translate-key="userNameQiuXiangYue">秋香月</h3>
+                                <div class="rating">
+                                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="review-text" data-translate-key="reviewText14">Llama4在剧本创作方面给了我很多帮助。当我遇到情节卡壳或者需要新的角色设定时，它总能提供一些出人意料但又合情合理的点子。对于需要大量创意的工作来说，它是非常棒的辅助工具。</p>
+                        <div class="review-tags">
+                            <span data-translate-key="tagScriptWriting">剧本创作</span><span data-translate-key="tagInspirationBoost">灵感激发</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="reviews-summary">
+                    <h2 data-translate-key="summaryTitle">综合评分</h2>
+                    <div class="rating-large">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                        <span data-translate-key="summaryOverallScoreText">4.8/5.0</span>
+                    </div>
+                    <div class="rating-categories">
+                        <div class="rating-category">
+                            <span data-translate-key="ratingCategoryCoding">编程能力</span>
+                            <div class="rating-bar">
+                                <div class="rating-fill" style="width: 95%"></div>
+                            </div>
+                            <span>4.8</span>
+                        </div>
+                        <div class="rating-category">
+                            <span data-translate-key="ratingCategoryUnderstanding">理解能力</span>
+                            <div class="rating-bar">
+                                <div class="rating-fill" style="width: 98%"></div>
+                            </div>
+                            <span>4.9</span>
+                        </div>
+                        <div class="rating-category">
+                            <span data-translate-key="ratingCategoryImageProcessing">图像处理</span>
+                            <div class="rating-bar">
+                                <div class="rating-fill" style="width: 90%"></div>
+                            </div>
+                            <span>4.5</span>
+                        </div>
+                        <div class="rating-category">
+                            <span data-translate-key="ratingCategoryCreativity">创意能力</span>
+                            <div class="rating-bar">
+                                <div class="rating-fill" style="width: 92%"></div>
+                            </div>
+                            <span>4.6</span>
+                        </div>
+                        <div class="rating-category">
+                            <span data-translate-key="ratingCategoryImgAnalysis">图像解析</span>
+                            <div class="rating-bar">
+                                <div class="rating-fill" style="width: 93%"></div>
+                            </div>
+                            <span>4.7</span>
+                        </div>
+                        <div class="rating-category">
+                            <span data-translate-key="ratingCategoryAIPainting">AI绘画</span>
+                            <div class="rating-bar">
+                                <div class="rating-fill" style="width: 96%"></div>
+                            </div>
+                            <span>4.8</span>
+                        </div>
+                        <div class="rating-category">
+                            <span data-translate-key="ratingCategoryImgToImg">以图生图</span>
+                            <div class="rating-bar">
+                                <div class="rating-fill" style="width: 94%"></div>
+                            </div>
+                            <span>4.7</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/translation.js"></script>
+    <script src="js/script.js"></script>
+
+<footer class="site-footer">
+    <p><span class="lang-zh" data-translate-key="footerText">&copy; 2024 llama4中文版. 版权所有.</span><span class="lang-en" style="display:none;" data-translate-key="footerTextEn">&copy; 2024 llama4 Chinese Version. All rights reserved.</span></p>
+    <p>渝ICP备2025053282号</p>
+</footer>
+
+</body>
+</html> 

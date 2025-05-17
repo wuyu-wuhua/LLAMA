@@ -1,0 +1,378 @@
+const translations = {
+    // General UI elements
+    pageTitle: { zh: "llama4中文版 | 国内高速访问与AI模型下载", en: "llama4 Chinese Ver. | High-Speed Access & AI Model Download" },
+    sidebarAppName: { zh: "llama4", en: "llama4" },
+    sidebarLogin: { zh: "点击登录", en: "Login" }, // Text for the link itself
+    sidebarLoginText: { zh: "点击登录", en: "Click to Login" }, // Text inside the span for the link
+    sidebarChat: { zh: "对话", en: "Chat" },
+    sidebarReviews: { zh: "用户评价", en: "User Reviews" },
+    historyTitle: { zh: "历史对话", en: "Chat History" },
+    newChatButton: { zh: "新对话", en: "New Chat" },
+    footerText: { zh: "&copy; 2024 llama4中文版. 版权所有.", en: "&copy; 2024 llama4 Chinese Version. All rights reserved." },
+    footerTextEn: { zh: "&copy; 2024 llama4中文版. 版权所有.", en: "&copy; 2024 llama4 Chinese Version. All rights reserved." },
+    langToggleAriaLabel: { zh: "切换语言", en: "Toggle language" },
+
+    // Chat History UI (NEW and EXISTING relevant keys)
+    aiThinking: { zh: 'AI正在思考中...',en: 'AI is thinking...' },// 或者您希望的英文文本，例如 "AI thinking..."// 新增或修改此键
+    aiPaintingInProgress: { zh: 'AI正在绘画中...', en: 'AI is painting...' },
+    clearAllHistoryBtn: { zh: '清空全部历史', en: 'Clear All History' },
+    confirmClearAllHistory: { zh: '您确定要删除所有聊天记录吗？', en: 'Are you sure you want to delete all chat history?' },
+    errorDeletingHistory: { zh: "删除历史记录时出错。", en: "Error deleting history." },
+    errorLoadingHistory: { zh: '加载历史记录失败。', en: 'Error loading history.' },
+    noHistoryFound: { zh: '未找到聊天记录。', en: 'No chat history found.' },
+    deleteChat: { zh: '删除对话', en: 'Delete chat' },
+    confirmDeleteChat: { zh: '您确定要删除 "{title}" 吗？', en: 'Are you sure you want to delete "{title}"?' },
+    errorDeletingChat: { zh: '删除对话失败。', en: 'Error deleting chat.' },
+    errorLoadingConversation: { zh: '加载对话失败', en: 'Error loading conversation' },
+
+    // Main page (index.html) specific
+    mainTitle: { zh: "llama4中文版", en: "llama4 Chinese Ver." },
+    subtitle: { zh: "国内高速访问与AI模型下载", en: "High-Speed Domestic Access & AI Model Download" },
+    welcomeHeading: { zh: "欢迎使用 llama4", en: "Welcome to llama4" },
+    welcomeMessageDefault: { zh: "开始一段新的对话，体验强大的AI能力", en: "Start a new conversation and experience powerful AI capabilities" },
+    chatInputPlaceholder: { zh: "输入您的问题...", en: "Type your question..." },
+    scenarioTitle: { zh: "使用场景", en: "Usage Scenarios" },
+
+    // Login Page specific
+    loginPageTitle: { zh: "登录 - llama4中文版", en: "Login - llama4 Chinese Ver." },
+    loginFormTitle: { zh: "用户登录", en: "User Login" },
+    loginEmailLabel: { zh: "邮箱或用户名", en: "Email or Username" },
+    loginEmailPlaceholder: { zh: "请输入您的邮箱或用户名", en: "Enter your email or username" },
+    loginPasswordLabel: { zh: "密码", en: "Password" },
+    loginPasswordPlaceholder: { zh: "请输入您的密码", en: "Enter your password" },
+    loginButton: { zh: "登录", en: "Login" },
+    loginNoAccount: { zh: "还没有账户？", en: "Don't have an account?" },
+    loginRegisterLink: { zh: "立即注册", en: "Register Now" },
+
+    // Register Page specific
+    registerPageTitle: { zh: "注册 - llama4中文版", en: "Register - llama4 Chinese Ver." },
+    registerFormTitle: { zh: "创建账户", en: "Create Account" },
+    registerUsernameLabel: { zh: "用户名", en: "Username" },
+    registerUsernamePlaceholder: { zh: "请输入您的用户名", en: "Enter your username" },
+    registerEmailLabel: { zh: "邮箱", en: "Email" },
+    registerEmailPlaceholder: { zh: "请输入您的邮箱", en: "Enter your email" },
+    registerPasswordLabel: { zh: "密码", en: "Password" },
+    registerPasswordPlaceholder: { zh: "请输入密码 (至少8位)", en: "Enter password (min. 8 characters)" },
+    registerConfirmPasswordLabel: { zh: "确认密码", en: "Confirm Password" },
+    registerConfirmPasswordPlaceholder: { zh: "请再次输入密码", en: "Enter password again" },
+    registerButton: { zh: "注册", en: "Register" },
+    registerHasAccount: { zh: "已经有账户了？", en: "Already have an account?" },
+    registerLoginLink: { zh: "立即登录", en: "Login Now" },
+
+    // Google Sign-in and other common links
+    continueWithGoogle: { zh: "继续使用Google", en: "Continue with Google" },
+    returnToHome: { zh: "返回首页", en: "Return to Homepage" },
+
+    // Scenario Buttons
+    scenarioGeneral: { zh: "通用对话", en: "General Chat" },
+    scenarioCode: { zh: "代码助手", en: "Code Assistant" },
+    scenarioCreative: { zh: "创意写作", en: "Creative Writing" },
+    scenarioAnalysis: { zh: "数据分析", en: "Data Analysis" },
+    scenarioEducation: { zh: "教育辅导", en: "Education Support" },
+    scenarioTranslation: { zh: "翻译助手", en: "Translation Aid" },
+    scenarioImageAnalysis: { zh: "图像解析", en: "Image to prompt" },
+    scenarioAIPainting: { zh: "AI绘画", en: "AI Painting" }, // Also known as Text-to-Image
+    scenarioImageToImage: { zh: "以图生图", en: "Image-to-Image" },
+
+    // Scenario specific welcome messages (titles and content)
+    welcomeGeneralTitle: { zh: "通用对话", en: "General Chat" },
+    welcomeGeneralMessage: { zh: "我可以回答你的各种问题，提供信息和建议。", en: "I can answer your various questions, provide information and advice." },
+    aiGreetingGeneral: { zh: "你好！我是你的通用对话助手，请告诉我你需要什么帮助？", en: "Hello! I am your General Chat assistant, please tell me what help you need?" },
+    
+    welcomeCodeTitle: { zh: "代码助手", en: "Code Assistant" },
+    welcomeCodeMessage: { zh: "我可以帮助你解决编程问题、生成代码、解释算法等。", en: "I can help you solve programming problems, generate code, explain algorithms, etc." },
+    aiGreetingCode: { zh: "你好！我是你的代码助手，请告诉我你需要什么帮助？", en: "Hello! I am your Code Assistant, please tell me what help you need?" },
+
+    welcomeCreativeTitle: { zh: "创意写作", en: "Creative Writing" },
+    welcomeCreativeMessage: { zh: "我可以帮助你进行创意写作，包括故事创作、文案撰写等。", en: "I can help you with creative writing, including story creation, copywriting, etc." },
+    aiGreetingCreative: { zh: "你好！我是你的创意写作助手，请告诉我你需要什么帮助？", en: "Hello! I am your Creative Writing assistant, please tell me what help you need?" },
+
+    welcomeAnalysisTitle: { zh: "数据分析", en: "Data Analysis" },
+    welcomeAnalysisMessage: { zh: "我可以帮助你分析数据、解释趋势、生成图表等。", en: "I can help you analyze data, interpret trends, generate charts, etc." },
+    aiGreetingAnalysis: { zh: "你好！我是你的数据分析助手，请告诉我你需要什么帮助？", en: "Hello! I am your Data Analysis assistant, please tell me what help you need?" },
+
+    welcomeEducationTitle: { zh: "教育辅导", en: "Education Support" },
+    welcomeEducationMessage: { zh: "我可以作为你的学习助手，解答问题、提供学习资料等。", en: "I can be your learning assistant, answer questions, provide learning materials, etc." },
+    aiGreetingEducation: { zh: "你好！我是你的教育辅导助手，请告诉我你需要什么帮助？", en: "Hello! I am your Education Support assistant, please tell me what help you need?" },
+
+    welcomeTranslationTitle: { zh: "翻译助手", en: "Translation Aid" },
+    welcomeTranslationMessage: { zh: "我可以帮助你翻译不同语言的文本，支持多种语言。", en: "I can help you translate text in different languages, supporting multiple languages." },
+    aiGreetingTranslation: { zh: "你好！我是你的翻译助手，请告诉我你需要什么帮助？", en: "Hello! I am your Translation Aid assistant, please tell me what help you need?" },
+
+    welcomeImageAnalysisTitle: { zh: "图像解析", en: "Image Analysis" },
+    welcomeImageAnalysisMessage: { zh: "我可以分析图像内容、识别物体、提取文本等。请上传或描述你想要分析的图像。", en: "I can analyze image content, recognize objects, extract text, etc. Please upload or describe the image you want to analyze." },
+    aiGreetingImageAnalysis: { zh: "你好！我是你的图像解析助手，请告诉我你需要什么帮助？", en: "Hello! I am your Image Analysis assistant, please tell me what help you need?" },
+
+    welcomeAIPaintingTitle: { zh: "AI绘画", en: "AI Painting" },
+    welcomeAIPaintingMessage: { zh: "请描述你想要生成的画面，我会尽力为你创作独特的图像。", en: "Please describe the image you want to generate, and I will do my best to create a unique image for you." },
+    aiGreetingAIPainting: { zh: "你好！我是你的AI绘画助手，请告诉我你需要什么帮助？", en: "Hello! I am your AI Painting assistant, please tell me what help you need?" },
+
+    welcomeImageToImageTitle: { zh: "以图生图", en: "Image-to-Image" },
+    welcomeImageToImageMessage: { zh: "请上传一张参考图像，并告诉我你希望如何变换或基于它生成新的图像。", en: "Please upload a reference image and tell me how you want to transform it or generate new images based on it." },
+    aiGreetingImageToImage: { zh: "你好！我是你的以图生图助手，请告诉我你需要什么帮助？", en: "Hello! I am your Image-to-Image assistant, please tell me what help you need?" },
+    
+    // History items
+    historyDiscussAI: { zh: '关于AI技术的讨论', en: 'Discussion on AI Technology' },
+    historyCodingHelp: { zh: '编程问题解答', en: 'Coding Problem Solving' },
+    historyCreativeWriting: { zh: '创意写作辅助', en: 'Creative Writing Assistance' },
+    historyDataAnalysis: { zh: '数据分析帮助', en: 'Data Analysis Help' },
+    historyLearningResources: { zh: '学习资料整理', en: 'Learning Resources Compilation' },
+    historyAlertPrefix: { zh: "加载历史对话: ", en: "Loading history: " },
+    chatHistoryItemDefaultTitle: { zh: "新对话", en: "New Chat"},
+    chatHistoryItemTimeAgo: { zh: "刚刚", en: "just now"}, // Simplified for now
+
+    // Time
+    timeToday: { zh: '今天', en: 'Today' },
+    timeYesterday: { zh: '昨天', en: 'Yesterday' },
+    time3DaysAgo: { zh: '3天前', en: '3 days ago' },
+    timeLastWeek: { zh: '上周', en: 'Last week' },
+
+    // Generic AI responses for initChat() in script.js
+    aiReplyHello: { zh: '你好！我是llama4，有什么可以帮助你的吗？', en: 'Hello! I am llama4, how can I help you?' },
+    aiReplyCapability: { zh: '我可以帮助你进行编程、写作、数据分析、学习辅导等多种任务。你可以尝试选择下方的使用场景，或直接告诉我你的需求。', en: 'I can assist you with various tasks such as programming, writing, data analysis, and learning support. You can try selecting one of the usage scenarios below or tell me your needs directly.' },
+    aiReplyCoding: { zh: '我可以帮助你解决编程问题、生成代码、解释算法等。请告诉我你遇到的具体问题或需求。', en: 'I can help you solve programming problems, generate code, explain algorithms, etc. Please tell me the specific problem or your requirements.' },
+    aiReplyImage: { zh: '我可以分析图像内容、提供设计建议，以及根据描述生成创意图像。请告诉我你的具体需求。', en: 'I can analyze image content, provide design suggestions, and generate creative images based on descriptions. Please tell me your specific needs.' },
+    aiReplyDefault: { zh: '我已收到你的消息，请告诉我更多详情，这样我才能更好地帮助你。', en: 'I have received your message. Please provide more details so I can better assist you.' },
+    aiResponseGreeting: { zh: "你好！我能为你做些什么？", en: "Hello! How can I assist you today?"},
+    aiResponseFarewell: { zh: "再见！祝你拥有美好的一天！", en: "Goodbye! Have a great day."},
+    aiResponseAcknowledge: { zh: "好的，我明白了。", en: "Okay, I understand."},
+    aiResponseApology: { zh: "抱歉，我不太确定如何帮助你处理这个问题。", en: "I apologize, I'm not sure how to help with that."},
+    alertPrefixInfo: { zh: "信息：", en: "Info:"},
+    alertPrefixWarning: { zh: "警告：", en: "Warning:"},
+    alertPrefixError: { zh: "错误：", en: "Error:"},
+
+    // Keywords for AI response logic in script.js
+    keywordHello: { zh: "你好", en: "hello" },
+    keywordHi: { zh: "嗨", en: "hi" },
+    keywordGoodbye: { zh: "再见", en: "goodbye" },
+    keywordThanks: { zh: "谢谢", en: "thanks" },
+    keywordCapability: { zh: "能力", en: "capability" },
+    keywordFunction: { zh: "功能", en: "function" },
+    keywordCode: { zh: "代码", en: "code" },
+    keywordProgramming: { zh: "编程", en: "programming" },
+    keywordImage: { zh: "图像", en: "image" },
+    keywordPicture: { zh: "图片", en: "picture" },
+
+    // Reviews page (reviews.html) specific
+    reviewsPageTitle: { zh: "用户评价 - llama4中文版 | 国内高速访问与AI模型下载", en: "User Reviews - llama4 Chinese Ver. | High-Speed Access & AI Model Download" },
+    reviewsMainTitle: { zh: "用户评价", en: "User Reviews" },
+    reviewsSubtitle: { zh: "来自真实用户的llama4使用体验", en: "Real user experiences with llama4" },
+    summaryTitle: { zh: "综合评分", en: "Overall Score" },
+    summaryOverallScoreText: { zh: "4.8/5.0", en: "4.8/5.0" }, // This is static, consider if it needs translation or dynamic update
+    ratingCategoryCoding: { zh: "编程能力", en: "Coding Ability" },
+    ratingCategoryUnderstanding: { zh: "理解能力", en: "Understanding" },
+    ratingCategoryImgAnalysis: { zh: "图像解析", en: "Image Analysis" }, 
+    ratingCategoryAIPainting: { zh: "AI绘画", en: "AI Painting" }, 
+    ratingCategoryImgToImg: { zh: "以图生图", en: "Image-to-Image" }, 
+    ratingCategoryImageProcessing: { zh: "图像处理", en: "Image Processing" }, 
+    ratingCategoryCreativity: { zh: "创意能力", en: "Creativity" },
+
+    // Review Tags
+    tagCodingAbility: { zh: "编程能力", en: "Coding Ability" },
+    tagCodeGeneration: { zh: "代码生成", en: "Code Generation" },
+    tagMultiLanguageSupport: { zh: "多语言支持", en: "Multi-language Support" },
+    tagAlgorithmOptimization: { zh: "算法优化", en: "Algorithm Optimization" },
+    tagAcademicUnderstanding: { zh: "学术理解", en: "Academic Understanding" },
+    tagConceptParsing: { zh: "概念解析", en: "Concept Parsing" },
+    tagContextualUnderstanding: { zh: "上下文理解", en: "Contextual Understanding" },
+    tagIntentRecognition: { zh: "意图识别", en: "Intent Recognition" },
+    tagImageAnalysis: { zh: "图像分析", en: "Image Analysis" }, // General
+    tagDesignAssistance: { zh: "设计辅助", en: "Design Assistance" },
+    tagImageGeneration: { zh: "图像生成", en: "Image Generation" },
+    tagPhotoAnalysis: { zh: "照片分析", en: "Photo Analysis" },
+    tagImageParsing: { zh: "图像解析", en: "Image Parsing" }, // Specific
+    tagObjectDetection: { zh: "目标检测", en: "Object Detection" },
+    tagMedicalImaging: { zh: "医学影像", en: "Medical Imaging" },
+    tagAIPainting: { zh: "AI绘画", en: "AI Painting" }, // Text-to-Image
+    tagTextToImage: { zh: "文生图", en: "Text-to-Image" },
+    tagCreativeGeneration: { zh: "创意生成", en: "Creative Generation" },
+    tagIllustrationAssistance: { zh: "插画辅助", en: "Illustration Assistance" },
+    tagImageToImage: { zh: "以图生图", en: "Image-to-Image" },
+    tagStyleTransfer: { zh: "风格迁移", en: "Style Transfer" },
+    tagImageEditing: { zh: "图像编辑", en: "Image Editing" },
+    tagCreativeGraphics: { zh: "创意配图", en: "Creative Graphics" },
+    tagStoryCreation: { zh: "故事创作", en: "Story Creation" },
+    tagStyleMimicking: { zh: "风格模仿", en: "Style Mimicking" },
+    tagScriptWriting: { zh: "剧本创作", en: "Script Writing" },
+    tagInspirationBoost: { zh: "灵感激发", en: "Inspiration Boost" },
+
+    // User Names in Reviews (ensure these match data-translate-key attributes)
+    userNameBei: { zh: "北.", en: "Bei." },
+    userNamePanPan: { zh: "Pan Pan", en: "Pan Pan" },
+    userNameQianQingSen: { zh: "浅清森", en: "Qian Qingsen" },
+    userNameFangMing: { zh: "芳铭", en: "Fang Ming" },
+    userNameChenJuanJuan: { zh: "陈卷卷", en: "Chen Juanjuan" }, 
+    userNameIoioYa: { zh: "ioio娅", en: "ioioYa" }, 
+    userNameChuiPaoPaoYanYan: { zh: "吹个泡泡", en: "Bubble" },
+    userNameNanshan: { zh: "南山月半弯", en: "Nanshan Moon" }, 
+    userNameZhaoZhaoZhao: { zh: "赵赵赵", en: "Zhao Zhaozhao" },
+    userNameDoubleWu: { zh: "Double吴", en: "Double Wu" },
+    userNameJunWei: { zh: "向前", en: "Forward" },
+    userNameChenMoShiJin: { zh: "沉默是金", en: "Silence is Gold" },
+    userNameHQH: { zh: "HQH", en: "HQH" },
+    userNameQiuXiangYue: { zh: "秋香月", en: "Qiuxiang Yue" },
+
+    // Review Texts (ensure these match data-translate-key attributes)
+    reviewText01: { 
+        zh: "作为一名资深开发者，我对llama4的编程能力印象深刻。它不仅能理解复杂的代码结构，还能提供优化建议和修复bug。最令我惊讶的是它能够根据我的描述自动生成完整的功能模块，大大提高了我的开发效率。", 
+        en: "As a senior developer, I am deeply impressed by llama4's programming capabilities. It not only understands complex code structures but also provides optimization suggestions and bug fixes. What surprised me most was its ability to automatically generate complete functional modules based on my descriptions, greatly improving my development efficiency."
+    },
+    reviewText02: {
+        zh: "llama4在多语言编程支持方面表现出色，从Python到JavaScript，从Java到Rust，几乎无所不能。它能够理解我的项目结构，并提供符合项目风格的代码。特别是在处理算法问题时，它能提供多种解决方案并分析时间复杂度，帮助我选择最优解。",
+        en: "llama4 excels in multi-language programming support, covering almost everything from Python to JavaScript, from Java to Rust. It can understand my project structure and provide code that matches the project style. Especially when dealing with algorithmic problems, it offers multiple solutions and analyzes time complexity, helping me choose the optimal one."
+    },
+    reviewText03: {
+        zh: "作为一名研究人员，我经常需要AI助手帮我理解和总结复杂的学术论文。llama4的理解能力令人惊叹，它不仅能准确把握论文的核心观点，还能将复杂概念简化解释，甚至能够指出不同研究之间的联系和差异。这大大提高了我的研究效率。",
+        en: "As a researcher, I often need an AI assistant to help me understand and summarize complex academic papers. llama4's comprehension ability is astounding; it not only accurately grasps the core ideas of papers but also simplifies complex concepts and even points out connections and differences between various studies. This has significantly improved my research efficiency."
+    },
+    reviewText04: {
+        zh: "llama4能够理解我提出的各种问题，即使是模糊不清的描述也能准确把握我的意图。最让我印象深刻的是它的上下文理解能力，在长时间对话中能够记住之前的内容，并基于整个对话历史给出连贯的回答。这种体验让我感觉像是在和一个真实的导师交流。",
+        en: "llama4 can understand various questions I pose, accurately grasping my intent even from vague descriptions. What impresses me most is its contextual understanding; in long conversations, it remembers previous content and provides coherent answers based on the entire dialogue history. This experience feels like conversing with a real tutor."
+    },
+    reviewText05: { 
+        zh: "llama4对图像的理解和处理能力令我惊讶。它不仅能分析照片的构图和色彩，还能识别照片中的场景和物体，甚至能根据我的描述生成创意图像。作为一名专业摄影师，这些功能极大地帮助了我的创作过程。",
+        en: "llama4's ability to understand and process images amazes me. It not only analyzes photo composition and color but also recognizes scenes and objects in photos, and can even generate creative images from my descriptions. As a professional photographer, these features greatly aid my creative process."
+    },
+    reviewText06: { 
+        zh: "作为一名UI设计师，我经常需要AI帮我分析和优化设计。llama4的图像处理能力非常强大，它能够准确识别图像中的元素，分析设计布局，甚至能根据我的描述生成设计草图。这大大加速了我的设计流程，让我能够更快地将创意变为现实。",
+        en: "As a UI designer, I frequently need AI to help analyze and optimize designs. llama4's image processing capabilities are very powerful; it accurately identifies elements in images, analyzes design layouts, and can even generate design sketches from my descriptions. This has greatly accelerated my design process, allowing me to bring ideas to reality faster."
+    },
+    reviewText07: {
+        zh: "Llama4的图像解析能力非常出色。我上传了一些包含复杂场景和微小细节的图片，它都能准确识别关键元素并进行分类。对于我的研究工作来说，这是一个巨大的帮助，节省了大量手动标记的时间。",
+        en: "Llama4's image parsing ability is excellent. I uploaded some images with complex scenes and minute details, and it accurately identified key elements and classified them. For my research work, this is a huge help, saving a lot of manual tagging time."
+    },
+    reviewText08: {
+        zh: "我使用Llama4进行医学影像分析，它在识别微小病灶方面的准确率令人印象深刻。结合其API，我们可以快速搭建原型系统，辅助医生进行初步筛查，潜力巨大。",
+        en: "I use Llama4 for medical image analysis, and its accuracy in identifying tiny lesions is impressive. Combined with its API, we can quickly build prototype systems to assist doctors in preliminary screening, showing great potential."
+    },
+    reviewText09: {
+        zh: "我对Llama4的AI绘画功能感到非常惊喜！只需要简单的文字描述，它就能生成富有创意和艺术感的图像。无论是抽象概念还是具体场景，它都能很好地理解并呈现出来。这为我的艺术创作打开了新的大门。",
+        en: "I am very surprised by Llama4's AI painting feature! With just simple text descriptions, it can generate creative and artistic images. Whether abstract concepts or specific scenes, it understands and presents them well. This has opened new doors for my artistic creation."
+    },
+    reviewText10: {
+        zh: "作为一名插画师，我尝试了Llama4的文生图功能，效果超出了我的预期。它生成的图像风格多样，细节处理也很到位。虽然有时需要调整几次描述才能得到完美结果，但总体来说是一个非常强大的灵感和草图工具。",
+        en: "As an illustrator, I tried Llama4's text-to-image feature, and the results exceeded my expectations. The images it generates are diverse in style and have good detail. Although sometimes it takes a few adjustments to the description to get the perfect result, overall it is a very powerful tool for inspiration and sketching."
+    },
+    reviewText11: {
+        zh: "Llama4的以图生图功能非常有趣。我上传了一些自己的摄影作品，尝试让AI进行二次创作，比如转换成梵高风格或者赛博朋克风格，结果非常惊艳。它不仅能准确模仿风格，还能保留原作的核心元素。",
+        en: "Llama4's image-to-image feature is very interesting. I uploaded some of my photography works and tried to let AI re-create them, such as converting them into Van Gogh style or cyberpunk style, and the results were stunning. It not only accurately imitates the style but also retains the core elements of the original work."
+    },
+    reviewText12: {
+        zh: "我用Llama4辅助进行图像编辑，比如去除照片中的多余物体、修复老照片的瑕疵等。它的智能编辑功能非常高效，比传统软件手动操作快多了，而且效果自然。对于非专业人士来说非常友好。",
+        en: "I use Llama4 to assist with image editing, such as removing unwanted objects from photos and repairing blemishes in old photos. Its intelligent editing features are very efficient, much faster than manual operations in traditional software, and the results are natural. It is very friendly for non-professionals."
+    },
+    reviewText13: {
+        zh: "作为一名内容创作者，我经常需要为文章和视频寻找合适的配图。Llama4的AI绘画和图像生成能力帮了大忙，我可以根据内容主题快速生成独一无二的创意图片，不再受限于版权图库。",
+        en: "As a content creator, I often need to find suitable illustrations for articles and videos. Llama4's AI painting and image generation capabilities have been a great help. I can quickly generate unique creative images based on the content theme, no longer limited by copyrighted image libraries."
+    },
+    reviewText14: {
+        zh: "Llama4在剧本创作方面给了我很多帮助。当我遇到情节卡壳或者需要新的角色设定时，它总能提供一些出人意料但又合情合理的点子。对于需要大量创意的工作来说，它是非常棒的辅助工具。",
+        en: "Llama4 has helped me a lot in scriptwriting. When I encounter plot sticking points or need new character settings, it always provides some unexpected yet reasonable ideas. For work that requires a lot of creativity, it is an excellent auxiliary tool."
+    },
+    aiPaintingInProgress: {
+        zh: "AI正在绘画中，请稍候...",
+        en: "AI is painting, please wait..."
+    },
+    aiGeneratedImageAlt: {
+        zh: "AI生成的图片",
+        en: "AI-generated image"
+    },
+    promptRequiredForPainting: {
+        zh: "请输入绘画提示词。",
+        en: "Please enter a prompt for painting."
+    },
+    imageRequiredForAnalysis: {
+        zh: "请上传需要分析的图片。",
+        en: "Please upload an image for analysis."
+    },
+    errorProcessingImage: {
+        zh: "处理图片时出错。",
+        en: "Error processing image."
+    },
+    aiEmptyReply: {
+        zh: "AI没有返回有效回复。",
+        en: "AI did not return a valid response."
+    }
+};
+
+let currentLang = localStorage.getItem('preferredLang') || 'zh'; // Default to Chinese
+
+function setLanguage(lang) {
+    currentLang = lang;
+    localStorage.setItem('preferredLang', lang);
+    document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+
+    document.querySelectorAll('[data-translate-key]').forEach(element => {
+        const key = element.getAttribute('data-translate-key');
+        // Use getTranslatedString to ensure we get a valid string or the key itself
+        const translation = getTranslatedString(key, currentLang);
+        
+        if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+            if (element.placeholder && translation !== key) { // Only update if translation found
+                element.placeholder = translation;
+            }
+        } else if (element.hasAttribute('aria-label') && key === 'langToggleAriaLabel' && translation !== key) {
+             element.setAttribute('aria-label', translation);
+        } else if (translation !== key) { // Only update if translation found
+            element.innerHTML = translation; // Use innerHTML to support &copy; etc.
+        }
+    });
+
+    // Special handling for the language toggle button text
+    const langToggleBtn = document.getElementById('lang-toggle-btn');
+    if (langToggleBtn) {
+        const spanZh = langToggleBtn.querySelector('span[lang="zh-CN"]');
+        const spanEn = langToggleBtn.querySelector('span[lang="en"]');
+        if (spanZh && spanEn) {
+            if (currentLang === 'zh') {
+                spanZh.style.display = 'inline';
+                spanEn.style.display = 'none';
+                spanZh.textContent = 'EN'; // Show 'EN' when current lang is Chinese
+            } else {
+                spanZh.style.display = 'none';
+                spanEn.style.display = 'inline';
+                spanEn.textContent = '中文'; // Show '中文' when current lang is English
+            }
+        }
+    }
+    // Dispatch a custom event to notify that the language has changed
+    document.dispatchEvent(new CustomEvent('languageChange', { detail: { lang: currentLang } }));
+}
+
+
+function toggleLanguage() {
+    const newLang = currentLang === 'zh' ? 'en' : 'zh';
+    setLanguage(newLang);
+    if (typeof updatePageForLanguageChange === 'function') {
+        updatePageForLanguageChange();
+    }
+}
+
+function getTranslatedString(key, langToUse = currentLang) {
+    if (translations.hasOwnProperty(key)) {
+        const langSpecificTranslations = translations[key];
+        if (langSpecificTranslations.hasOwnProperty(langToUse) && typeof langSpecificTranslations[langToUse] === 'string') {
+            return langSpecificTranslations[langToUse];
+        }
+        const fallbackLang = langToUse === 'zh' ? 'en' : 'zh';
+        if (langSpecificTranslations.hasOwnProperty(fallbackLang) && typeof langSpecificTranslations[fallbackLang] === 'string') {
+            return langSpecificTranslations[fallbackLang];
+        }
+    }
+    return key; 
+}
+
+function getTranslatedScenarioText(baseScenarioKey, langToUse = currentLang) {
+    const textKey = translations[baseScenarioKey] ? translations[baseScenarioKey][langToUse] : baseScenarioKey;
+    return textKey;
+}
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    setLanguage(currentLang); 
+
+    const langToggleBtn = document.getElementById('lang-toggle-btn');
+    if (langToggleBtn) {
+        langToggleBtn.addEventListener('click', toggleLanguage);
+    }
+});

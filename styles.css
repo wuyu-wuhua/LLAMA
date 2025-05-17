@@ -1,0 +1,1385 @@
+/* 全局样式 */
+:root {
+    --primary-color: #0066ff;
+    --secondary-color: #4d94ff;
+    --bg-color: #f2f4f4; /* Changed to new background color */
+    --sidebar-bg: #ffffff;
+    --text-color: #333333;
+    --light-text: #666666;
+    --border-color: #e1e4e8;
+    --hover-color: #f0f2f5;
+    --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    --border-radius: 8px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+
+body {
+    background-color: var(--bg-color); /* Ensure this uses the updated variable */
+    color: var(--text-color);
+    line-height: 1.6;
+    position: relative; /* Crucial for z-index stacking of the animated background */
+    overflow-x: hidden; /* Prevent horizontal scrollbars if lines animate out of bounds */
+    cursor: none; /* Hide default cursor */
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    outline: none;
+    background: none;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* 容器布局 */
+.container {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* 侧边栏样式 */
+.sidebar {
+    width: 280px;
+    background-image: linear-gradient(145deg, #00c6fb 0%, #c39bd3 100%);
+    border-right: 1px solid rgba(255, 255, 255, 0.15);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    color: #ffffff;
+}
+
+.sidebar-header {
+    padding: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.sidebar-header h2 {
+    color: #ffffff;
+    font-size: 24px;
+}
+
+.sidebar-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.nav-links {
+    padding: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.nav-links a {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    margin-bottom: 5px;
+    border-radius: var(--border-radius);
+    color: #f7f9f9;
+    transition: all 0.2s ease;
+}
+
+.nav-links a i {
+    margin-right: 10px;
+    font-size: 18px;
+}
+
+/* Colorful Sidebar Icons */
+.nav-links a[href="login.html"] i {
+    color: #FFA500; /* Vibrant Orange for Login */
+}
+.nav-links a[href="index.html"] i {
+    color: #32CD32; /* Lime Green for Chat */
+}
+.nav-links a[href="reviews.html"] i {
+    color: #FF00FF; /* Magenta for Reviews */
+}
+
+.nav-links a:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+}
+
+.nav-links a.active {
+    background-color: rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.history-header h3 {
+    font-size: 16px;
+    font-weight: 500;
+    color: #ffffff;
+}
+
+.new-chat-btn {
+    display: flex;
+    align-items: center;
+    padding: 6px 12px;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 20px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.new-chat-btn i {
+    margin-right: 5px;
+}
+
+.new-chat-btn:hover {
+    background-color: var(--secondary-color);
+}
+
+.chat-history {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.chat-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #f7f9f9 
+;
+}
+
+.chat-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+.chat-item i {
+    margin-right: 10px;
+}
+
+.chat-item-text {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.chat-item-time {
+    font-size: 12px;
+    color: #d0d3d4 ;
+}
+
+/* 主内容区样式 */
+.main-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+/* 聊天界面样式 */
+.chat-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    background-color: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+
+.chat-header {
+    padding: 20px;
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+    position: relative;
+}
+
+.chat-header h1 {
+    color: var(--primary-color);
+    margin-bottom: 5px;
+}
+
+/* 3D闪光渐变标题 */
+.main-title {
+    font-size: 36px;
+    font-weight: bold;
+    background: linear-gradient(45deg, #8A2BE2, #FF69B4, #7FFF00, #1E90FF, #8A2BE2);
+    background-size: 400% 400%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradient-animation 10s ease infinite, text-pop-up-top 0.8s cubic-bezier(0.250, 0.460, 0.450, 0.940) both, flash-effect 2.2s infinite linear;
+    text-shadow:
+        0px 1px 0px #e8daef,
+        0px 2px 0px #dcd0e5,
+        0px 3px 0px #d0c6dc,
+        0px 4px 0px #c4bcc3,
+        0px 5px 0px #b8b2ca,
+        0px 6px 1px rgba(0,0,0,.1),
+        0px 0px 5px rgba(0,0,0,.1),
+        0px 1px 3px rgba(0,0,0,.3),
+        0px 3px 5px rgba(0,0,0,.2),
+        0px 5px 10px rgba(0,0,0,.25),
+        0px 10px 10px rgba(0,0,0,.2),
+        0px 20px 20px rgba(0,0,0,.15);
+    position: relative;
+    min-height: 1em;
+}
+
+.main-title::after {
+    content: '|';
+    font-weight: normal;
+    color: #777;
+    animation: blink-caret 0.8s step-end infinite;
+    margin-left: 1px;
+}
+
+@keyframes blink-caret {
+    from, to { opacity: 0; }
+    50% { opacity: 1; }
+}
+
+.subtitle {
+    font-size: 18px;
+    color: var(--light-text);
+    background: linear-gradient(45deg, #00aaff, #ff66cc, #ffcc00, #00aaff);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradient-animation 12s ease infinite alternate, text-focus-in 1s cubic-bezier(0.550, 0.085, 0.680, 0.530) both;
+}
+
+@keyframes gradient-animation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* 文本弹出动画 */
+@keyframes text-pop-up-top {
+  0% {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* 文本聚焦动画 */
+@keyframes text-focus-in {
+  0% {
+    filter: blur(12px);
+    opacity: 0;
+  }
+  100% {
+    filter: blur(0px);
+    opacity: 1;
+  }
+}
+
+/* New keyframe for title flash effect */
+@keyframes flash-effect {
+  0%, 100% {
+    text-shadow:
+        0px 1px 0px #e8daef,
+        0px 2px 0px #dcd0e5,
+        0px 3px 0px #d0c6dc,
+        0px 4px 0px #c4bcc3,
+        0px 5px 0px #b8b2ca,
+        0px 6px 1px rgba(0,0,0,.1),
+        0px 0px 5px rgba(0,0,0,.1), 0px 1px 3px rgba(0,0,0,.3),
+        0px 3px 5px rgba(0,0,0,.2), 0px 5px 10px rgba(0,0,0,.25),
+        0px 10px 10px rgba(0,0,0,.2), 0px 20px 20px rgba(0,0,0,.15);
+  }
+  50% {
+    text-shadow:
+        0px 1px 0px #e8daef,
+        0px 2px 0px #dcd0e5,
+        0px 3px 0px #d0c6dc,
+        0px 4px 0px #c4bcc3,
+        0px 5px 0px #b8b2ca,
+        0px 6px 1px rgba(0,0,0,.1),
+        0px 0px 5px rgba(0,0,0,.1), 0px 1px 3px rgba(0,0,0,.3),
+        0px 3px 5px rgba(0,0,0,.2), 0px 5px 10px rgba(0,0,0,.25),
+        0px 10px 10px rgba(0,0,0,.2), 0px 20px 20px rgba(0,0,0,.15),
+        /* Added flash layers */
+        0 0 7px rgba(255, 255, 255, 0.9),
+        0 0 12px rgba(220, 150, 255, 0.8), /* Light purple flash */
+        0 0 20px rgba(255, 105, 180, 0.7); /* Pink flash */
+  }
+}
+
+/* New keyframe for reviews summary pulse */
+@keyframes pulse-animation {
+    0% { transform: scale(1); box-shadow: var(--shadow); }
+    50% { transform: scale(1.015); box-shadow: 0 5px 25px rgba(0, 102, 255, 0.25); } /* Primary color shadow emphasis */
+    100% { transform: scale(1); box-shadow: var(--shadow); }
+}
+
+/* Language Toggle Button Styling */
+.title-container {
+    display: flex; 
+    align-items: center;
+    justify-content: space-between; /* Title left (effectively center with grow), button right */
+    width: 100%; /* Ensure full width */
+    position: relative; /* Keep for absolute positioning of pseudo-elements if ever needed, or just good practice for containers */
+}
+
+.title-container h1 { /* Targeting h1 specifically within title-container */
+    flex-grow: 1; /* Allows the title to take up available space */
+    text-align: center; /* Centers the text within the h1 element */
+    /* Add margin-left to compensate for the button on the right, trying to re-center the title */
+    /* This value should ideally match the effective width of the #lang-toggle-btn */
+    /* Let's estimate button width: padding (12+12) + text width (e.g., 25-35px for '中文' or 'EN') ~ 50-60px */
+    /* We will also add a small margin-right to ensure space between title and button */
+    margin-left: 60px; /* Adjust this value as needed */
+    margin-right: 10px; /* Provides some space if title is long */
+}
+
+#lang-toggle-btn {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    padding: 8px 12px; 
+    font-size: 13px; 
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    z-index: 10; 
+    flex-shrink: 0; /* Prevent button from shrinking if title is very long */
+}
+
+#lang-toggle-btn:hover {
+    background-color: var(--secondary-color);
+}
+
+/* .chat-header already has position: relative and padding-right: 100px, which should be sufficient. */
+/* If .main-title needs specific adjustment due to the button, it can be done here. */
+/* For example, if .main-title is very long: */
+/* .main-title { */
+/*    max-width: calc(100% - 80px); /* Ensuring it doesn't go under the button */
+/*    overflow: hidden; */
+/*    text-overflow: ellipsis; */
+/*    white-space: nowrap; */
+/* } */
+
+.chat-header p {
+    color: var(--light-text);
+}
+
+.chat-messages {
+    padding: 20px;
+    min-height: 400px;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.welcome-message {
+    text-align: center;
+    padding: 40px 0;
+}
+
+.welcome-message h2 {
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+.welcome-message p {
+    color: var(--light-text);
+}
+
+.message {
+    margin-bottom: 20px;
+    display: flex;
+}
+
+.message-user {
+    justify-content: flex-end;
+}
+
+.message-content {
+    max-width: 80%;
+    padding: 15px;
+    border-radius: var(--border-radius);
+}
+
+.message-user .message-content {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.message-ai .message-content {
+    background-color: var(--hover-color);
+    /* Ensure the bubble itself doesn't become too wide */
+    max-width: 80%; /* This should already be there from .message-content */
+    /* Add flex properties to center the image if it's smaller than the bubble */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px; /* Adjust padding as needed, maybe less if image is main content */
+    border-radius: var(--border-radius);
+}
+
+.message-ai .message-content img {
+  display: block;       /* Good practice for images */
+  max-width: 100%;      /* Image will not be wider than its container (.message-content) */
+  width: auto;          /* Width will scale based on height or intrinsic aspect ratio */
+  max-height: 300px;    /* Adjust this value as desired - e.g., 200px, 250px */
+  max-width: 400px;
+  height: auto;         /* Height will scale based on width or intrinsic aspect ratio */
+  object-fit: contain;  /* Ensures the entire image fits within the above dimensions, scaled, maintaining aspect ratio */
+  border-radius: 8px;   /* Match bubble radius or specific image style */
+  /* margin-top: 0; Removed as flex alignment should handle spacing within padding of parent */
+}
+
+.chat-input-container {
+    display: flex;
+    align-items: flex-end; /* Align items to the bottom for varying heights */
+    padding: 10px;
+    border-top: 1px solid var(--border-color);
+    background-color: var(--secondary-bg-color);
+    gap: 8px; /* Add gap between elements */
+}
+
+#image-upload-label {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    flex-shrink: 0; /* Prevent shrinking */
+}
+
+#image-upload-label:hover {
+    background-color: var(--primary-color-dark);
+}
+
+#upload-icon {
+    font-size: 18px;
+}
+
+#image-preview {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover; /* Ensure image covers the circle without distortion */
+    display: none; /* Initially hidden */
+}
+
+#remove-image-btn {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    border: none;
+    font-size: 14px;
+    line-height: 18px; /* Adjust for better vertical centering of '×' */
+    text-align: center;
+    cursor: pointer;
+    display: none; /* Initially hidden */
+    padding: 0;
+    z-index: 10;
+}
+
+#chat-input {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-medium);
+    resize: none;
+    font-size: 1em;
+    min-height: 40px; /* Match button height */
+    max-height: 120px; /* Allow some expansion */
+    overflow-y: auto; /* Add scroll for overflow */
+}
+
+.chat-control-btn { /* Generic class for control buttons if needed, already used by send */
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+    flex-shrink: 0; /* Prevent shrinking */
+}
+
+.chat-control-btn:hover {
+    background-color: var(--primary-color-dark);
+}
+
+/* Ensure send button is also styled consistently if it wasn't fully circular before */
+#send-btn {
+    /* chat-control-btn already covers most styling */
+}
+
+.scenario-buttons {
+    padding: 20px;
+    border-top: 1px solid var(--border-color);
+}
+
+.scenario-buttons h3 {
+    margin-bottom: 15px;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.scenario-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.scenario-btn {
+    padding: 12px;
+    background-color: var(--hover-color);
+    border-radius: var(--border-radius);
+    font-size: 14px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.scenario-btn i {
+    font-size: 16px;
+}
+
+.scenario-btn:hover {
+    background-color: var(--border-color);
+}
+
+.scenario-btn.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* Colorful Scenario Icons */
+.scenario-grid .scenario-btn[data-scenario="general"] i { color: #5DADE2; } /* Light Blue */
+.scenario-grid .scenario-btn[data-scenario="code"] i { color: #F39C12; } /* Orange */
+.scenario-grid .scenario-btn[data-scenario="creative"] i { color: #8E44AD; } /* Purple */
+.scenario-grid .scenario-btn[data-scenario="analysis"] i { color: #f7dc6f; } /* Green */
+.scenario-grid .scenario-btn[data-scenario="education"] i { color: #AF601A; } /* Brown */
+.scenario-grid .scenario-btn[data-scenario="translation"] i { color: #E74C3C; } /* Red */
+.scenario-grid .scenario-btn[data-scenario="imageanalysis"] i { color: #16A085; } /* Teal */
+.scenario-grid .scenario-btn[data-scenario="aipainting"] i { color: #FF69B4; } /* Pink */
+.scenario-grid .scenario-btn[data-scenario="imagetoimage"] i { color: #483D8B; } /* Dark Slate Blue */
+
+/* 用户评价页面样式 */
+.reviews-container {
+    max-width: 900px;
+    margin: 0 auto;
+    background-color: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+
+.reviews-header {
+    padding: 20px;
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.reviews-header h1 {
+    color: var(--primary-color);
+    margin-bottom: 5px;
+}
+
+.reviews-header p {
+    color: var(--light-text);
+}
+
+.reviews-categories {
+    display: flex;
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+    overflow-x: auto;
+}
+
+.category-btn {
+    padding: 8px 15px;
+    margin-right: 10px;
+    border-radius: 20px;
+    font-size: 14px;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.category-btn:hover {
+    background-color: var(--hover-color);
+}
+
+.category-btn.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.review-card {
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 20px;
+    transition: all 0.2s ease;
+}
+
+.review-card:hover {
+    box-shadow: var(--shadow);
+    transform: translateY(-2px);
+}
+
+.review-header {
+    display: flex;
+    margin-bottom: 15px;
+}
+
+.review-header img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 15px;
+}
+
+.review-user h3 {
+    margin-bottom: 5px;
+}
+
+.rating {
+    color: #ffcc00;
+}
+
+.review-text {
+    margin-bottom: 15px;
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+.review-tags {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.review-tags span {
+    padding: 5px 10px;
+    background-color: var(--hover-color);
+    border-radius: 20px;
+    font-size: 12px;
+    margin-right: 8px;
+    margin-bottom: 8px;
+}
+
+.reviews-summary {
+    background-color: #fff;
+    padding: 25px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    margin-top: 30px;
+    animation: pulse-animation 3s infinite ease-in-out;
+}
+
+.reviews-summary h2 {
+    margin-bottom: 15px;
+}
+
+.rating-large {
+    font-size: 24px;
+    color: #ffcc00;
+    margin-bottom: 20px;
+}
+
+.rating-large span {
+    color: var(--text-color);
+    margin-left: 10px;
+    font-size: 20px;
+}
+
+.rating-categories {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.rating-category {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.rating-category span {
+    width: 100px;
+    text-align: left;
+}
+
+.rating-category span:last-child {
+    width: 40px;
+    text-align: right;
+}
+
+.rating-bar {
+    flex: 1;
+    height: 8px;
+    background-color: var(--hover-color);
+    border-radius: 4px;
+    margin: 0 10px;
+    overflow: hidden;
+}
+
+.rating-fill {
+    height: 100%;
+    background-color: var(--primary-color);
+}
+
+/* Marquee Review Styles */
+.marquee-wrapper {
+    position: relative;
+    display: flex;
+    height: 1200px; /* Adjust as needed */
+    width: 100%;
+    max-width: 900px; /* Match reviews-container */
+    margin: 20px auto; /* Spacing */
+    overflow: hidden;
+    gap: 20px; /* Space between columns */
+    padding: 0 10px; /* Padding for cards not to touch edges */
+}
+
+.marquee-column {
+    display: flex;
+    flex-direction: column;
+    flex-basis: 0;
+    flex-grow: 1;
+    min-width: 0; /* Important for flex basis 0 to work */
+    height: fit-content; /* Allow content to determine height for animation */
+}
+
+.marquee-column .review-card {
+    width: calc(100% - 10px); /* Adjust width to fit column, considering potential padding/margin */
+    margin-bottom: 15px;
+    flex-shrink: 0; /* Prevent cards from shrinking */
+}
+
+#marquee-column-1 {
+    animation: marquee-scroll-up 40s linear infinite;
+}
+
+#marquee-column-2 {
+    animation: marquee-scroll-down 40s linear infinite;
+}
+
+/* Updated hover rule for marquee columns to ensure animation pauses ON THE SPECIFIC COLUMN */
+#marquee-column-1:hover {
+    animation-play-state: paused;
+}
+
+#marquee-column-2:hover {
+    animation-play-state: paused;
+}
+
+@keyframes marquee-scroll-up {
+    0% {
+        transform: translateY(0%);
+    }
+    100% {
+        transform: translateY(-50%); /* Scroll one full set of duplicated items */
+    }
+}
+
+@keyframes marquee-scroll-down {
+    0% {
+        transform: translateY(-50%); /* Start from the end of the first set */
+    }
+    100% {
+        transform: translateY(0%);
+    }
+}
+
+.marquee-fade-top,
+.marquee-fade-bottom {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 20%; /* Adjust fade height */
+    pointer-events: none;
+    z-index: 2;
+}
+
+.marquee-fade-top {
+    top: 0;
+    background: linear-gradient(to bottom, var(--bg-color) 0%, transparent 100%);
+}
+
+.marquee-fade-bottom {
+    bottom: 0;
+    background: linear-gradient(to top, var(--bg-color) 0%, transparent 100%);
+}
+
+/* Site Footer */
+.site-footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #333; /* Dark background for footer */
+    color: #f0f2f5; /* Light text for footer */
+    border-top: 1px solid var(--border-color);
+    width: 100%;
+    flex-shrink: 0; /* Add this to ensure footer doesn't shrink */
+} 
+
+/* Styles for the body of authentication pages */
+body.auth-body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Ensure body takes full viewport height */
+    margin: 0; /* Reset default body margin */
+    background-color: var(--bg-color); /* Keep consistent background */
+}
+
+/* Adjust .container on auth pages to be the main centering flexbox */
+body.auth-body > .container {
+    flex-grow: 1; /* Allow this container to take up available space */
+    display: flex;
+    align-items: center; /* Vertically center content */
+    justify-content: center; /* Horizontally center content */
+    width: 100%;
+    padding: 0; /* MODIFIED: No padding on the centering wrapper itself */
+    /* Override global .container styles that are for sidebar layout */
+    height: auto; 
+    overflow: visible; 
+}
+
+/* The .main-content.auth-page div inside body.auth-body > .container */
+/* Reset its global .main-content styles that might interfere with centering */
+body.auth-body .main-content.auth-page {
+    padding: 0;       /* Override global .main-content padding */
+    width: 100%;      /* Allow it to take full width of its centering parent */
+    max-width: 500px; /* User has set this to 500px, was 1000px. This is the actual content block width. */
+    margin: 0 auto;   /* ADDED: Explicitly center this block horizontally */
+    /* flex: 0 0 auto;   REMOVED: This was likely causing it to shrink-wrap */
+    /* overflow-y: auto; /* This can be inherited or specified if needed, probably fine as is */
+}
+
+/* .auth-container styles remain the same and define the form box */
+.auth-container {
+    max-width: 500px; /* User has set this to 1000px */
+    width: 100%; /* This will make it fill the .main-content.auth-page */
+    background-color: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+
+.auth-container .chat-header {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.auth-form {
+    padding: 25px 30px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"] {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: 15px;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="email"]:focus,
+.form-group input[type="password"]:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(0, 102, 255, 0.2);
+}
+
+.auth-btn {
+    width: 100%;
+    padding: 12px 15px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.auth-btn:hover {
+    background-color: var(--secondary-color);
+}
+
+.auth-switch {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 14px;
+    color: var(--light-text);
+}
+
+.auth-switch a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.auth-switch a:hover {
+    text-decoration: underline;
+}
+
+/* Ensure .main-title on auth pages uses the same styling but is adaptable */
+.auth-container .main-title {
+    font-size: 28px; /* Slightly smaller for auth pages */
+    /* Resetting complex styles from global .main-title */
+    background: none;
+    -webkit-background-clip: initial;
+    background-clip: initial;
+    -webkit-text-fill-color: initial;
+    color: var(--primary-color); /* Use primary color for the title */
+    animation: none; /* Remove all animations */
+    text-shadow: none; /* Remove complex text shadow */
+    min-height: auto; /* Reset min-height */
+}
+
+.auth-container .main-title::after {
+    content: none; /* Remove blinking cursor */
+}
+
+.google-login-btn {
+    width: 100%;
+    padding: 10px 15px; /* Slightly less padding than main button */
+    background-color: #ffffff; /* White background */
+    color: #4285F4; /* Google Blue text */
+    border: 1px solid #dadce0; /* Google-style border */
+    border-radius: var(--border-radius);
+    font-size: 15px; /* Slightly smaller font */
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 15px; /* Space from the button above */
+}
+
+.google-login-btn i.fab.fa-google {
+    margin-right: 10px;
+    font-size: 18px;
+    color: #DB4437; /* Google Red for the icon itself */
+}
+
+.google-login-btn:hover {
+    background-color: #f8f9fa; /* Slight grey on hover */
+    border-color: #c6c9cc;
+}
+
+.auth-footer-link {
+    margin-top: 25px; /* More space before this link */
+    padding-top: 15px; /* Add some padding above if there's a border */
+    border-top: 1px solid var(--border-color); /* Separator line */
+    text-align: center;
+    font-size: 14px;
+}
+
+.auth-footer-link a {
+    color: var(--light-text);
+    text-decoration: none;
+}
+
+.auth-footer-link a:hover {
+    color: var(--primary-color);
+    text-decoration: underline;
+}
+
+/* Responsive Design */
+/* @media (max-width: 768px) { ... } */ /* This is the duplicated block that will be removed by the edit below */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+    
+    .sidebar {
+        width: 100%;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .chat-history {
+        display: none; /* Hide chat history on smaller screens */
+    }
+    
+    .reviews-grid {
+        grid-template-columns: 1fr; /* Stack review cards */
+    }
+
+    .title-container h1 {
+        margin-left: 10px; /* Reduce margin for smaller screens */
+        font-size: 24px; /* Adjust title font size */
+    }
+
+    #lang-toggle-btn {
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+
+    .auth-container .main-title {
+        font-size: 24px; /* Adjust auth title font size */
+    }
+
+    .scenario-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 columns for scenarios */
+    }
+}
+
+/* Custom Mouse Pointer */
+#custom-mouse-pointer {
+    position: fixed;
+    left: -50px; /* Start off-screen */
+    top: -50px; /* Start off-screen */
+    width: 40px;
+    height: 40px;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    transform-origin: center center;
+    animation: custom-pointer-bob 1.5s infinite ease-in-out;
+}
+
+#custom-mouse-pointer.visible {
+    opacity: 1;
+}
+
+#custom-mouse-pointer svg {
+    width: 100%;
+    height: 100%;
+    color: #ec4899; /* Pink-600 equivalent */
+}
+
+#custom-mouse-pointer svg path {
+    fill: currentColor;
+    animation: custom-pointer-heartbeat 0.8s infinite ease-in-out;
+    transform-origin: center center;
+}
+
+@keyframes custom-pointer-bob {
+    0%, 100% {
+        transform: scale(0.8) rotate(0deg);
+    }
+    50% {
+        transform: scale(1) rotate(5deg);
+    }
+    75% {
+        transform: scale(1) rotate(-5deg);
+    }
+}
+
+@keyframes custom-pointer-heartbeat {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+}
+
+/* Animated Lines Background */
+#animated-lines-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1; /* Adjusted from -1 to -1 (no change, it was already -1, particles will be -2) */
+    pointer-events: none; /* Make it non-interactive */
+    overflow: hidden; /* Hide parts of lines that go outside */
+}
+
+.flashing-line {
+    position: absolute;
+    opacity: 0;
+    border-radius: 2px;
+    /* --flash-color will be defined per line for the glow */
+    z-index: 0; /* Above animated lines (-1), below main content */
+}
+
+@keyframes line-flash-pulse {
+    0% { opacity: 0.1; box-shadow: 0 0 4px 1px transparent; transform: scale(0.95); }
+    50% { opacity: 0.7; box-shadow: 0 0 12px 3px var(--flash-color, rgba(255,255,255,0.5)); transform: scale(1.05); }
+    100% { opacity: 0.1; box-shadow: 0 0 4px 1px transparent; transform: scale(0.95); }
+}
+
+/* Individual line styles & animations */
+.flashing-line.line-1 {
+    top: 10%; left: -5%; /* Start slightly off-screen */
+    width: 40%; height: 2px;
+    background: linear-gradient(90deg, #ff3b30, #ff9500);
+    --flash-color: #ff5e1a;
+    animation: line-flash-pulse 4s infinite ease-in-out 0s, move-line-1 15s infinite linear alternate 0s;
+}
+@keyframes move-line-1 { 
+    0% { transform: translateX(0%) rotate(-5deg); } 
+    100% { transform: translateX(150%) rotate(5deg); left: 30%;} /* Move across and a bit down */
+}
+
+.flashing-line.line-2 {
+    top: -5%; right: 15%; /* Start slightly off-screen top */
+    width: 2px; height: 35%;
+    background: linear-gradient(0deg, #34c759, #00c2cb);
+    --flash-color: #34c759;
+    animation: line-flash-pulse 3.5s infinite ease-in-out 0.5s, move-line-2 12s infinite linear alternate 0.5s;
+}
+@keyframes move-line-2 { 
+    0% { transform: translateY(0%) rotate(3deg); } 
+    100% { transform: translateY(200%) rotate(-3deg); top: 40%;} /* Move down and a bit across */
+}
+
+.flashing-line.line-3 {
+    bottom: 5%; right: -10%; /* Start slightly off-screen */
+    width: 50%; height: 3px;
+    background: linear-gradient(270deg, #007aff, #5856d6);
+    --flash-color: #007aff;
+    animation: line-flash-pulse 4.5s infinite ease-in-out 1s, move-line-3 18s infinite linear alternate 1s;
+}
+@keyframes move-line-3 { 
+    0% { transform: translateX(0%) rotate(4deg); } 
+    100% { transform: translateX(-180%) rotate(-6deg); left: -20%;} 
+}
+
+.flashing-line.line-4 {
+    bottom: 20%; left: 30%;
+    width: 25%; height: 2px;
+    transform: rotate(-30deg);
+    background: linear-gradient(90deg, #af52de, #ff2d55);
+    --flash-color: #af52de;
+    animation: line-flash-pulse 3s infinite ease-in-out 1.5s;
+    /* This one will be more static, just pulsing */
+}
+
+.flashing-line.line-5 {
+    top: 40%; left: 45%;
+    width: 3px; height: 20%;
+    transform: rotate(20deg);
+    background: linear-gradient(0deg, #ffcc00, #ff9500);
+    --flash-color: #ffcc00;
+    animation: line-flash-pulse 5s infinite ease-in-out 2s;
+    /* Also more static, pulsing */
+}
+
+.flashing-line.line-6 {
+    top: 70%; left: 10%;
+    width: 35%; height: 2px;
+    transform: rotate(15deg);
+    background: linear-gradient(90deg, #5ac8fa, #007aff);
+    --flash-color: #5ac8fa;
+    animation: line-flash-pulse 3.8s infinite ease-in-out 2.5s, move-line-6 20s infinite ease-in-out alternate 2.5s;
+}
+@keyframes move-line-6 {
+    0% { transform: translate(0px, 0px) rotate(15deg); }
+    50% { transform: translate(20px, -10px) rotate(10deg); }
+    100% { transform: translate(0px, 0px) rotate(15deg); }
+}
+
+/* Page Particles Container Styling */
+#page-particles-js {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -2; /* Furthest back, behind animated lines and confetti */
+    pointer-events: none;
+}
+
+.clear-all-history-container {
+    padding: 5px 10px; /* Consistent with sidebar header/item padding */
+    margin-bottom: 5px; /* Add some space before the history items list */
+}
+
+.clear-all-history-actual-btn {
+    width: 100%;
+    padding: 8px 10px;
+    font-size: 0.9em; /* Slightly smaller or same as other sidebar text */
+    color: #fff; /* White text */
+    background-color: #007bff; /* Primary blue, similar to .new-chat-btn */
+    border: none;
+    border-radius: 5px; /* Consistent with other buttons */
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.2s ease-in-out;
+    display: block; /* Ensure it takes full width */
+}
+
+.clear-all-history-actual-btn:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* Adjustments for individual history item delete button */
+.chat-item .delete-history-item-btn {
+    background-color: transparent;
+    color: #adb5bd; /* Lighter text color for less emphasis */
+    border: none;
+    padding: 0 5px;
+    font-size: 1.2em; /* Make the 'x' a bit larger */
+    line-height: 1;
+    cursor: pointer;
+    float: right; /* Position to the right */
+    margin-left: 5px;
+}
+
+.chat-item .delete-history-item-btn:hover {
+    color: #ff4d4d; /* Reddish color on hover for delete action */
+}
+
+/* Ensure chat item text and time don't overlap with delete button */
+.chat-item-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex-grow: 1;
+}
+
+.chat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-item > i {
+    margin-right: 8px;
+}
+
+.message.ai-message img {
+  display: block;        /* Helps with margin auto and layout */
+  width: 300px;         /* Define a fixed width for the image's display area */
+  height: 300px;        /* Define a fixed height for the image's display area */
+  object-fit: contain;  /* Scales the image to fit within this 180x180 box, centered, preserving aspect ratio */
+  max-width: 100%;      /* Ensures the 180px box itself doesn't overflow its parent (.message-content) if parent is narrower */
+  max-height: 100%;     /* Same for height, relative to the 180px specified or parent */
+  border-radius: 8px;   /* Rounded corners for the image's frame */
+  margin-top: 8px;      /* Space above the image */
+  margin-left: auto;    /* Centers the 180x180 box within the .message-content bubble if bubble is wider */
+  margin-right: auto;   /* Centers the 180x180 box */
+  background-color: rgba(0,0,0,0.03); /* Optional: light background for the image box itself to see its bounds clearly */
+}
+
+/* Specific styling for the thinking message if it contains an image, though usually it won't */
+.message.ai-thinking img {
+  max-width: 100px; /* Smaller, if an image were ever in a thinking message */
+  max-height: 100px;
+} 
+
+/* Styles for the Clear All History button */
+.clear-all-history-container {
+    padding: 5px 10px; /* Consistent with sidebar header/item padding */
+    margin-bottom: 5px; /* Add some space before the history items list */
+}
+
+.clear-all-history-actual-btn {
+    width: 100%;
+    padding: 8px 10px;
+    font-size: 0.9em; /* Slightly smaller or same as other sidebar text */
+    color: #fff; /* White text */
+    background-color: #007bff; /* Primary blue, similar to .new-chat-btn */
+    border: none;
+    border-radius: 5px; /* Consistent with other buttons */
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.2s ease-in-out;
+    display: block; /* Ensure it takes full width */
+}
+
+.clear-all-history-actual-btn:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* Adjustments for individual history item delete button */
+.chat-item .delete-history-item-btn {
+    background-color: transparent;
+    color: #adb5bd; /* Lighter text color for less emphasis */
+    border: none;
+    padding: 0 5px;
+    font-size: 1.2em; /* Make the 'x' a bit larger */
+    line-height: 1;
+    cursor: pointer;
+    float: right; /* Position to the right */
+    margin-left: 5px;
+}
+
+.chat-item .delete-history-item-btn:hover {
+    color: #ff4d4d; /* Reddish color on hover for delete action */
+}
+
+/* Ensure chat item text and time don't overlap with delete button */
+.chat-item-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex-grow: 1;
+}
+
+.chat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-item > i {
+    margin-right: 8px;
+} 

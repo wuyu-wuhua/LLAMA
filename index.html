@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-translate-key="pageTitle">llama4中文版 | 国内高速访问与AI模型下载</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <link rel="icon" type="image/png" href="images/LLAMA.png">
+</head>
+<body>
+    <div id="custom-mouse-pointer"></div>
+    <div id="page-particles-js"></div>
+    <div id="animated-lines-bg">
+        <div class="flashing-line line-1"></div>
+        <div class="flashing-line line-2"></div>
+        <div class="flashing-line line-3"></div>
+        <div class="flashing-line line-4"></div>
+        <div class="flashing-line line-5"></div>
+        <div class="flashing-line line-6"></div>
+    </div>
+    <div class="container">
+        <!-- 侧边栏 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2 data-translate-key="sidebarAppName">llama4</h2>
+            </div>
+            <div class="sidebar-content">
+                <div class="nav-links">
+                    <a href="login.html" class="login-btn"><i class="fas fa-sign-in-alt"></i> <span data-translate-key="sidebarLoginText">点击登录</span></a>
+                    <a href="index.html" class="active"><i class="fas fa-comments"></i> <span data-translate-key="sidebarChat">对话</span></a>
+                    <a href="reviews.html"><i class="fas fa-star"></i> <span data-translate-key="sidebarReviews">用户评价</span></a>
+                </div>
+                <div class="history-header">
+                    <h3 data-translate-key="historyTitle">历史对话</h3>
+                    <button class="new-chat-btn"><i class="fas fa-plus"></i> <span data-translate-key="newChatButton">新对话</span></button>
+                </div>
+                <div class="chat-history">
+                    <!-- 历史对话将通过JavaScript动态添加 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <div class="chat-container">
+                <div class="chat-header">
+                    <div class="title-container">
+                        <h1 class="main-title" data-translate-key="mainTitle">llama4中文版</h1>
+                        <button id="lang-toggle-btn" aria-label="Toggle language">
+                            <span lang="zh-CN">EN</span>
+                            <span lang="en" style="display: none;">中文</span>
+                        </button>
+                    </div>
+                    <p class="subtitle" data-translate-key="subtitle">国内高速访问与AI模型下载</p>
+                </div>
+                <div class="chat-messages" id="chat-messages">
+                    <div class="welcome-message">
+                        <h2 data-translate-key="welcomeHeading">欢迎使用 llama4</h2>
+                        <p data-translate-key="welcomeMessage">开始一段新的对话，体验强大的AI能力</p>
+                    </div>
+                    <!-- 对话消息将通过JavaScript动态添加 -->
+                </div>
+                <div class="chat-input-container">
+                    <label for="image-upload-input" id="image-upload-label" class="chat-control-btn" title="Upload Image">
+                        <i class="fas fa-paperclip" id="upload-icon"></i>
+                        <img id="image-preview" src="#" alt="Image preview"/>
+                        <button id="remove-image-btn">&times;</button>
+                    </label>
+                    <input type="file" id="image-upload-input" accept="image/*" style="display: none;">
+                    <textarea id="chat-input" placeholder="输入您的问题..." data-translate-key="chatInputPlaceholder" rows="1"></textarea>
+                    <button id="send-btn" class="chat-control-btn"><i class="fas fa-paper-plane"></i></button>
+                </div>
+                <div class="scenario-buttons">
+                    <h3 data-translate-key="scenarioTitle">使用场景</h3>
+                    <div class="scenario-grid">
+                        <button class="scenario-btn" data-scenario="general"><i class="fas fa-comments"></i><span data-translate-key="scenarioGeneral">通用对话</span></button>
+                        <button class="scenario-btn" data-scenario="code"><i class="fas fa-code"></i><span data-translate-key="scenarioCode">代码助手</span></button>
+                        <button class="scenario-btn" data-scenario="creative"><i class="fas fa-feather-alt"></i><span data-translate-key="scenarioCreative">创意写作</span></button>
+                        <button class="scenario-btn" data-scenario="analysis"><i class="fas fa-chart-bar"></i><span data-translate-key="scenarioAnalysis">数据分析</span></button>
+                        <button class="scenario-btn" data-scenario="education"><i class="fas fa-book-reader"></i><span data-translate-key="scenarioEducation">教育辅导</span></button>
+                        <button class="scenario-btn" data-scenario="translation"><i class="fas fa-language"></i><span data-translate-key="scenarioTranslation">翻译助手</span></button>
+                        <button class="scenario-btn" data-scenario="imageanalysis"><i class="fas fa-image"></i><span data-translate-key="scenarioImageAnalysis">图像解析</span></button>
+                        <button class="scenario-btn" data-scenario="aipainting"><i class="fas fa-palette"></i><span data-translate-key="scenarioAIPainting">AI绘画</span></button>
+                        <button class="scenario-btn" data-scenario="imagetoimage"><i class="fas fa-sync-alt"></i><span data-translate-key="scenarioImageToImage">以图生图</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/translation.js"></script>
+    <script src="js/script.js"></script>
+
+<footer class="site-footer">
+    <p><span class="lang-zh" data-translate-key="footerText">&copy; 2024 llama4中文版. 版权所有.</span><span class="lang-en" style="display:none;" data-translate-key="footerTextEn">&copy; 2024 llama4 Chinese Version. All rights reserved.</span></p>
+    <p>渝ICP备2025053282号</p>
+</footer>
+
+</body>
+</html> 
