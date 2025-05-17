@@ -239,7 +239,7 @@ async function loadChatHistory() {
     clearAllBtn.addEventListener('click', async () => {
         if (confirm(getTranslatedString('confirmClearAllHistory') || 'Are you sure you want to delete all chat history?')) {
             try {
-                const response = await fetch('http://localhost:3001/api/history', { method: 'DELETE' });
+                const response = await fetch('/api/history', { method: 'DELETE' });
                 if (response.ok) {
                     loadChatHistory(); // Refresh history list
                     // If the current conversation was deleted, reset the chat view
@@ -260,7 +260,7 @@ async function loadChatHistory() {
     chatHistoryPanel.appendChild(clearAllBtnContainer);
 
     try {
-        const response = await fetch('http://localhost:3001/api/history');
+        const response = await fetch('/api/history');
         if (!response.ok) {
             console.error('Failed to fetch chat history');
             chatHistoryPanel.innerHTML += `<p>${getTranslatedString('errorLoadingHistory') || 'Error loading history.'}</p>`;
@@ -303,7 +303,7 @@ async function loadChatHistory() {
                 e.stopPropagation(); // Prevent chatItem click event
                 if (confirm(getTranslatedString('confirmDeleteChat', { title: titleText }) || `Are you sure you want to delete "${titleText}"?`)) {
                     try {
-                        const deleteResponse = await fetch(`http://localhost:3001/api/history/${item.id}`, { method: 'DELETE' });
+                        const deleteResponse = await fetch(`/api/history/${item.id}`, { method: 'DELETE' });
                         if (deleteResponse.ok) {
                             loadChatHistory(); // Refresh the list
                             if (currentConversationId === item.id) {
@@ -348,7 +348,7 @@ async function loadConversation(conversationId) {
     if (!chatMessages) return;
 
     try {
-        const response = await fetch(`http://localhost:3001/api/history/${conversationId}`);
+        const response = await fetch(`/api/history/${conversationId}`);
         if (!response.ok) {
             const errorKey = 'errorLoadingConversation';
             const errorText = getTranslatedString(errorKey) || 'Error loading conversation.';
@@ -473,7 +473,7 @@ function initChat() {
         addMessage(thinkingMessageText, 'ai-thinking');
 
         const endpoint = currentScenario === 'aipainting' ? '/api/image/generate' : '/api/chat';
-        const fullApiUrl = `http://localhost:3001${endpoint}`;
+        const fullApiUrl = endpoint;
 
         let requestBody = {
             scenario: currentScenario,
