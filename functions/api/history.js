@@ -15,7 +15,7 @@ export async function onRequestGet(context) {
     const lastMsg = history[history.length - 1];
     items.push({
       id: key.name,
-      title: (history[0]?.content || '新对话').slice(0, 20),
+      title: (history[0]?.text || '新对话').slice(0, 20),
       lastUpdated: key.metadata?.updated || new Date().toISOString(),
       scenario: 'general', // 可根据实际需求扩展
       icon: 'fas fa-comments',
