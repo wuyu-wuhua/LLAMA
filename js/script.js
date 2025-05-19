@@ -735,56 +735,65 @@ function initMarqueeHoverPause() {
 }
 
 function initImageUpload() {
-    const uploadLabel = document.getElementById('image-upload-label');
+    const imageUploadLabel = document.getElementById('image-upload-label'); // This is the paperclip icon's label
     const fileInput = document.getElementById('image-upload-input');
+    
+    const imagePreviewContainer = document.getElementById('image-preview-container');
     const imagePreview = document.getElementById('image-preview');
-    const uploadIcon = document.getElementById('upload-icon');
     const removeImageBtn = document.getElementById('remove-image-btn');
-    const chatInput = document.getElementById('chat-input');
+    const downloadImageBtn = document.getElementById('download-image-btn'); 
+    
+    const chatInput = document.getElementById('chat-input'); // Keep for focus logic if any
 
-    if (!uploadLabel || !fileInput || !imagePreview || !uploadIcon || !removeImageBtn || !chatInput) {
-        console.warn('Image upload elements not found. Feature may not work.');
+    if (!imageUploadLabel || !fileInput || !imagePreviewContainer || !imagePreview || !removeImageBtn || !downloadImageBtn || !chatInput) {
+        console.warn('Some image upload related elements are missing in the DOM.');
         return;
     }
 
-    // Event listener for when a file is selected
+    let uploadedFile = null; // Store the file object for download
+
     fileInput.addEventListener('change', function(event) {
         const file = event.target.files[0];
         if (file && file.type.startsWith('image/')) {
+            uploadedFile = file; // Store the file
             const reader = new FileReader();
             reader.onload = function(e) {
                 imagePreview.src = e.target.result;
-                imagePreview.style.display = 'block';
-                uploadIcon.style.display = 'none';
-                removeImageBtn.style.display = 'flex'; // Use flex to help center the 'x' if needed
+                imagePreviewContainer.style.display = 'block'; // Show preview container
+                removeImageBtn.style.display = 'block';       // Show remove button
+                downloadImageBtn.style.display = 'inline-flex'; // Show download button (uses .chat-control-btn styles)
+                // imageUploadLabel.style.display = 'none'; // Keep paperclip visible as per thought process
             }
             reader.readAsDataURL(file);
         } else {
-            // Optionally, handle non-image files or no file selected
-            // Reset to initial state if selection was cancelled or invalid
-            imagePreview.src = '#';
-            imagePreview.style.display = 'none';
-            uploadIcon.style.display = 'flex'; // Or 'block', consistent with CSS
-            removeImageBtn.style.display = 'none';
-            fileInput.value = ''; // Clear the file input
+            uploadedFile = null;
         }
     });
 
-    // Event listener for the remove image button
-    removeImageBtn.addEventListener('click', function(event) {
-        event.preventDefault(); // Prevent label click / file dialog opening
-        event.stopPropagation(); // Stop event from bubbling to the label
-
+    removeImageBtn.addEventListener('click', function() {
         imagePreview.src = '#';
-        imagePreview.style.display = 'none';
-        uploadIcon.style.display = 'flex'; // Or 'block' to match initial state logic
-        removeImageBtn.style.display = 'none';
-        fileInput.value = ''; // Clear the file input so the same file can be re-selected
+        uploadedFile = null;
+        imagePreviewContainer.style.display = 'none'; // Hide preview container
+        removeImageBtn.style.display = 'none';       // Hide remove button
+        downloadImageBtn.style.display = 'none';    // Hide download button
+        fileInput.value = ''; // Reset file input
+        // imageUploadLabel.style.display = 'inline-flex'; // Ensure paperclip is visible if it was hidden
     });
 
-    // Optional: Adjust chat input padding/margin if preview is visible
-    // This might be better handled by CSS flex gap or specific styling
-    // For instance, if the image preview takes up space and pushes the input
+    downloadImageBtn.addEventListener('click', function() {
+        if (uploadedFile && imagePreview.src && imagePreview.src !== '#') {
+            const link = document.createElement('a');
+            link.href = imagePreview.src; // Use the Data URL from the preview
+            
+            // Try to use original file name for download, fallback to generic name
+            link.download = uploadedFile.name || 'downloaded-image.png'; 
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } else {
+            alert(getTranslatedString('errorProcessingImage') || 'Could not download image. No image selected or error in processing.');
+        }
+    });
 }
 
 // Initialize Custom Mouse Pointer

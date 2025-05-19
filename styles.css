@@ -327,7 +327,7 @@ a {
         /* Added flash layers */
         0 0 7px rgba(255, 255, 255, 0.9),
         0 0 12px rgba(163, 228, 215, 0.8), /* Light purple flash */
-        0 0 20px rgba(26, 188, 156, 0.7); /* Pink flash */
+        0 0 20px rgba(26, 188, 156 , 0.7); /* Pink flash */
   }
 }
 
@@ -457,98 +457,132 @@ a {
 
 .chat-input-container {
     display: flex;
-    align-items: flex-end; /* Align items to the bottom for varying heights */
+    align-items: center; /* This should vertically center items including send button */
     padding: 10px;
+    background-color: #f8f9fa;
     border-top: 1px solid var(--border-color);
-    background-color: var(--secondary-bg-color);
-    gap: 8px; /* Add gap between elements */
+    gap: 10px;
 }
 
 #image-upload-label {
-    position: relative;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background-color: var(--primary-color);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    flex-shrink: 0; /* Prevent shrinking */
+    /* This is for the paperclip icon button itself */
+    /* It already uses .chat-control-btn, so its size (40x40) is set there */
+    /* No specific changes needed here if .chat-control-btn is correct for the icon */
+    /* Ensure it doesn't try to contain the preview anymore */
+    position: static; /* Override if any previous absolute/relative positioning for the label was made */
+    overflow: visible; /* Default */
+    width: 40px; /* Explicitly from .chat-control-btn if needed */
+    height: 40px; /* Explicitly from .chat-control-btn */
+    padding: 0; /* From .chat-control-btn */
 }
 
-#image-upload-label:hover {
-    background-color: var(--primary-color-dark);
-}
-
-#upload-icon {
-    font-size: 18px;
+/* New container for the image preview image and its remove button */
+#image-preview-container {
+    position: relative; /* For absolute positioning of remove-image-btn */
+    width: 120px;  /* Slightly wider */
+    height: 100px; /* Match chat input height */
+    border-radius: var(--border-radius);
+    overflow: hidden; /* If image is larger, it will be clipped by object-fit:cover */
+    display: none; /* Initially hidden, JS will show it */
 }
 
 #image-preview {
+    display: block; /* Remove extra space below image */
     width: 100%;
     height: 100%;
-    border-radius: 50%;
-    object-fit: cover; /* Ensure image covers the circle without distortion */
-    display: none; /* Initially hidden */
+    object-fit: cover; /* Cover the area, cropping if necessary */
+    border-radius: var(--border-radius); /* Match container's radius if desired */
 }
 
 #remove-image-btn {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background-color: rgba(0, 0, 0, 0.7);
+    display: none; /* Initially hidden, JS handles visibility */
+    background-color: rgba(0, 0, 0, 0.6);
     color: white;
     border: none;
-    font-size: 14px;
-    line-height: 18px; /* Adjust for better vertical centering of '×' */
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 11px;
+    line-height: 17px; /* Adjusted for new height */
     text-align: center;
     cursor: pointer;
-    display: none; /* Initially hidden */
-    padding: 0;
+    position: absolute; 
+    top: 3px;  /* Position on top-right of the preview */
+    right: 3px; 
     z-index: 10;
+}
+
+#download-image-btn {
+    display: none; /* Initially hidden, JS handles visibility */
+    /* background-color: rgba(0, 102, 255, 0.7); Re-style as a proper button if needed */
+    /* color: white; */
+    /* border: none; */
+    /* border-radius: 50%; */
+    width: 36px; /* Increased size - larger */
+    height: 36px; /* Increased size - larger */
+    font-size: 16px; /* Increased icon size */
+    /* line-height: 34px; */ /* chat-control-btn handles flex centering */
+    /* text-align: center; */
+    /* cursor: pointer; */
+    /* position: static; Remove absolute positioning */
+    /* z-index: auto; */
+    /* margin-left: 8px; /* Space it from the preview container, .chat-input-container gap will handle this */
+    /* Ensure it uses .chat-control-btn styles for consistency if desired, or style uniquely */
+}
+
+#download-image-btn i.fas.fa-download {
+    /* Icon specific styles if needed, e.g., color */
+}
+
+#download-image-btn:hover,
+#remove-image-btn:hover {
+    opacity: 0.8;
 }
 
 #chat-input {
     flex-grow: 1;
-    padding: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 15px; /* Keep left padding */
+    padding-right: 5px; /* Reduce right padding to give more space */
     border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-medium);
-    resize: none;
-    font-size: 1em;
-    min-height: 40px; /* Match button height */
-    max-height: 120px; /* Allow some expansion */
-    overflow-y: auto; /* Add scroll for overflow */
+    border-radius: 20px; 
+    background-color: #fff;
+    font-size: 16px;
+    resize: none; 
+    overflow-y: hidden; 
+    min-height: 100px; /* Increased from 40px */
+    line-height: 1.5; 
+    text-align: left; 
 }
 
-.chat-control-btn { /* Generic class for control buttons if needed, already used by send */
+.chat-control-btn { /* Generic class for control buttons including send button and image upload label */
+    background-color: transparent;
+    border: none;
+    color: var(--primary-color);
+    font-size: 20px;
+    padding: 0; /* Remove padding to rely on width/height for centering icon */
+    border-radius: 50%;
     width: 40px;
     height: 40px;
-    border-radius: 50%;
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    font-size: 18px;
-    cursor: pointer;
-    display: flex;
+    display: inline-flex; /* Changed from flex to inline-flex for label */
     align-items: center;
     justify-content: center;
-    transition: background-color 0.3s ease;
-    flex-shrink: 0; /* Prevent shrinking */
+    transition: background-color 0.2s ease, color 0.2s ease;
+    flex-shrink: 0; /* Prevent buttons from shrinking */
 }
 
-.chat-control-btn:hover {
-    background-color: var(--primary-color-dark);
+/* Ensure #image-upload-label which also uses chat-control-btn keeps its specific dimensions and styles if they differ */
+#image-upload-label.chat-control-btn {
+    width: 70px; /* As set above */
+    height: 50px; /* As set above */
+    border-radius: var(--border-radius); /* Rectangular */
+    padding: 5px; /* As set above */
+     /* justify-content: flex-start; /* Align items (icon, preview, buttons) to the left */
 }
 
-/* Ensure send button is also styled consistently if it wasn't fully circular before */
-#send-btn {
-    padding: 30px;/* chat-control-btn already covers most styling */
+#send-btn { /* This already uses .chat-control-btn and should be centered by align-items in container */
+    /* No specific changes needed if .chat-control-btn and container are correct */
 }
 
 .scenario-buttons {
@@ -858,52 +892,74 @@ a {
 
 /* Site Footer */
 .site-footer {
-    text-align: center;
     padding: 20px;
-    background-color: #333; /* Dark background for footer */
-    color: #f0f2f5; /* Light text for footer */
-    border-top: 1px solid var(--border-color);
+    background-color: #1a1a2e; /* Dark blueish background from image */
+    color: #e0e0e0; /* Light grey/off-white text */
+    border-top: 1px solid #3a3a5e; /* Match separator line */
     width: 100%;
-    flex-shrink: 0; /* Add this to ensure footer doesn't shrink */
-} 
+    flex-shrink: 0; 
+}
+
+.footer-top-line {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 25px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    border-bottom: 1px solid #3a3a5e;
+    padding-bottom: 10px;
+}
+
+.footer-top-line a {
+    color: #e0e0e0;
+    text-decoration: none;
+}
+
+.footer-top-line a:hover {
+    text-decoration: underline;
+}
+
+.site-footer p {
+    text-align: center;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.site-footer p:last-child {
+    margin-bottom: 0;
+}
 
 /* Styles for the body of authentication pages */
 body.auth-body {
     display: flex;
     flex-direction: column;
-    min-height: 100vh; /* Ensure body takes full viewport height */
-    margin: 0; /* Reset default body margin */
-    background-color: var(--bg-color); /* Keep consistent background */
+    min-height: 100vh;
+    margin: 0;
+    background-color: var(--bg-color);
 }
 
-/* Adjust .container on auth pages to be the main centering flexbox */
 body.auth-body > .container {
-    flex-grow: 1; /* Allow this container to take up available space */
+    flex-grow: 1;
     display: flex;
-    align-items: center; /* Vertically center content */
-    justify-content: center; /* Horizontally center content */
+    align-items: center;
+    justify-content: center;
     width: 100%;
-    padding: 0; /* MODIFIED: No padding on the centering wrapper itself */
-    /* Override global .container styles that are for sidebar layout */
+    padding: 0;
     height: auto; 
     overflow: visible; 
 }
 
-/* The .main-content.auth-page div inside body.auth-body > .container */
-/* Reset its global .main-content styles that might interfere with centering */
 body.auth-body .main-content.auth-page {
-    padding: 0;       /* Override global .main-content padding */
-    width: 100%;      /* Allow it to take full width of its centering parent */
-    max-width: 500px; /* User has set this to 500px, was 1000px. This is the actual content block width. */
-    margin: 0 auto;   /* ADDED: Explicitly center this block horizontally */
-    /* flex: 0 0 auto;   REMOVED: This was likely causing it to shrink-wrap */
-    /* overflow-y: auto; /* This can be inherited or specified if needed, probably fine as is */
+    padding: 0;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
 }
 
-/* .auth-container styles remain the same and define the form box */
 .auth-container {
-    max-width: 500px; /* User has set this to 1000px */
-    width: 100%; /* This will make it fill the .main-content.auth-page */
+    max-width: 500px;
+    width: 100%;
     background-color: white;
     border-radius: var(--border-radius);
     box-shadow: var(--shadow);
@@ -982,56 +1038,54 @@ body.auth-body .main-content.auth-page {
     text-decoration: underline;
 }
 
-/* Ensure .main-title on auth pages uses the same styling but is adaptable */
 .auth-container .main-title {
-    font-size: 28px; /* Slightly smaller for auth pages */
-    /* Resetting complex styles from global .main-title */
+    font-size: 28px;
     background: none;
     -webkit-background-clip: initial;
     background-clip: initial;
     -webkit-text-fill-color: initial;
-    color: var(--primary-color); /* Use primary color for the title */
-    animation: none; /* Remove all animations */
-    text-shadow: none; /* Remove complex text shadow */
-    min-height: auto; /* Reset min-height */
+    color: var(--primary-color);
+    animation: none;
+    text-shadow: none;
+    min-height: auto;
 }
 
 .auth-container .main-title::after {
-    content: none; /* Remove blinking cursor */
+    content: none;
 }
 
 .google-login-btn {
     width: 100%;
-    padding: 10px 15px; /* Slightly less padding than main button */
-    background-color: #ffffff; /* White background */
-    color: #4285F4; /* Google Blue text */
-    border: 1px solid #dadce0; /* Google-style border */
+    padding: 10px 15px;
+    background-color: #ffffff;
+    color: #4285F4;
+    border: 1px solid #dadce0;
     border-radius: var(--border-radius);
-    font-size: 15px; /* Slightly smaller font */
+    font-size: 15px;
     font-weight: 500;
     cursor: pointer;
     transition: background-color 0.3s ease, border-color 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: 15px; /* Space from the button above */
+    margin-top: 15px;
 }
 
 .google-login-btn i.fab.fa-google {
     margin-right: 10px;
     font-size: 18px;
-    color: #DB4437; /* Google Red for the icon itself */
+    color: #DB4437;
 }
 
 .google-login-btn:hover {
-    background-color: #f8f9fa; /* Slight grey on hover */
+    background-color: #f8f9fa;
     border-color: #c6c9cc;
 }
 
 .auth-footer-link {
-    margin-top: 25px; /* More space before this link */
-    padding-top: 15px; /* Add some padding above if there's a border */
-    border-top: 1px solid var(--border-color); /* Separator line */
+    margin-top: 25px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
     text-align: center;
     font-size: 14px;
 }
@@ -1046,8 +1100,6 @@ body.auth-body .main-content.auth-page {
     text-decoration: underline;
 }
 
-/* Responsive Design */
-/* @media (max-width: 768px) { ... } */ /* This is the duplicated block that will be removed by the edit below */
 @media (max-width: 768px) {
     .container {
         flex-direction: column;
@@ -1061,16 +1113,16 @@ body.auth-body .main-content.auth-page {
     }
     
     .chat-history {
-        display: none; /* Hide chat history on smaller screens */
+        display: none;
     }
     
     .reviews-grid {
-        grid-template-columns: 1fr; /* Stack review cards */
+        grid-template-columns: 1fr;
     }
 
     .title-container h1 {
-        margin-left: 10px; /* Reduce margin for smaller screens */
-        font-size: 24px; /* Adjust title font size */
+        margin-left: 10px;
+        font-size: 24px;
     }
 
     #lang-toggle-btn {
@@ -1079,19 +1131,18 @@ body.auth-body .main-content.auth-page {
     }
 
     .auth-container .main-title {
-        font-size: 24px; /* Adjust auth title font size */
+        font-size: 24px;
     }
 
     .scenario-grid {
-        grid-template-columns: repeat(2, 1fr); /* 2 columns for scenarios */
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
-/* Custom Mouse Pointer */
 #custom-mouse-pointer {
     position: fixed;
-    left: -50px; /* Start off-screen */
-    top: -50px; /* Start off-screen */
+    left: -50px;
+    top: -50px;
     width: 40px;
     height: 40px;
     z-index: 9999;
@@ -1109,7 +1160,7 @@ body.auth-body .main-content.auth-page {
 #custom-mouse-pointer svg {
     width: 100%;
     height: 100%;
-    color: #ec4899; /* Pink-600 equivalent */
+    color: #ec4899;
 }
 
 #custom-mouse-pointer svg path {
@@ -1139,24 +1190,22 @@ body.auth-body .main-content.auth-page {
     }
 }
 
-/* Animated Lines Background */
 #animated-lines-bg {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: -1; /* Adjusted from -1 to -1 (no change, it was already -1, particles will be -2) */
-    pointer-events: none; /* Make it non-interactive */
-    overflow: hidden; /* Hide parts of lines that go outside */
+    z-index: -1;
+    pointer-events: none;
+    overflow: hidden;
 }
 
 .flashing-line {
     position: absolute;
     opacity: 0;
     border-radius: 2px;
-    /* --flash-color will be defined per line for the glow */
-    z-index: 0; /* Above animated lines (-1), below main content */
+    z-index: 0;
 }
 
 @keyframes line-flash-pulse {
@@ -1165,9 +1214,8 @@ body.auth-body .main-content.auth-page {
     100% { opacity: 0.1; box-shadow: 0 0 4px 1px transparent; transform: scale(0.95); }
 }
 
-/* Individual line styles & animations */
 .flashing-line.line-1 {
-    top: 10%; left: -5%; /* Start slightly off-screen */
+    top: 10%; left: -5%;
     width: 40%; height: 2px;
     background: linear-gradient(90deg, #ff3b30, #ff9500);
     --flash-color: #ff5e1a;
@@ -1175,11 +1223,11 @@ body.auth-body .main-content.auth-page {
 }
 @keyframes move-line-1 { 
     0% { transform: translateX(0%) rotate(-5deg); } 
-    100% { transform: translateX(150%) rotate(5deg); left: 30%;} /* Move across and a bit down */
+    100% { transform: translateX(150%) rotate(5deg); left: 30%;}
 }
 
 .flashing-line.line-2 {
-    top: -5%; right: 15%; /* Start slightly off-screen top */
+    top: -5%; right: 15%;
     width: 2px; height: 35%;
     background: linear-gradient(0deg, #34c759, #00c2cb);
     --flash-color: #34c759;
@@ -1187,11 +1235,11 @@ body.auth-body .main-content.auth-page {
 }
 @keyframes move-line-2 { 
     0% { transform: translateY(0%) rotate(3deg); } 
-    100% { transform: translateY(200%) rotate(-3deg); top: 40%;} /* Move down and a bit across */
+    100% { transform: translateY(200%) rotate(-3deg); top: 40%;}
 }
 
 .flashing-line.line-3 {
-    bottom: 5%; right: -10%; /* Start slightly off-screen */
+    bottom: 5%; right: -10%;
     width: 50%; height: 3px;
     background: linear-gradient(270deg, #007aff, #5856d6);
     --flash-color: #007aff;
@@ -1209,7 +1257,6 @@ body.auth-body .main-content.auth-page {
     background: linear-gradient(90deg, #af52de, #ff2d55);
     --flash-color: #af52de;
     animation: line-flash-pulse 3s infinite ease-in-out 1.5s;
-    /* This one will be more static, just pulsing */
 }
 
 .flashing-line.line-5 {
@@ -1219,7 +1266,6 @@ body.auth-body .main-content.auth-page {
     background: linear-gradient(0deg, #ffcc00, #ff9500);
     --flash-color: #ffcc00;
     animation: line-flash-pulse 5s infinite ease-in-out 2s;
-    /* Also more static, pulsing */
 }
 
 .flashing-line.line-6 {
@@ -1236,58 +1282,55 @@ body.auth-body .main-content.auth-page {
     100% { transform: translate(0px, 0px) rotate(15deg); }
 }
 
-/* Page Particles Container Styling */
 #page-particles-js {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: -2; /* Furthest back, behind animated lines and confetti */
+    z-index: -2;
     pointer-events: none;
 }
 
 .clear-all-history-container {
-    padding: 5px 10px; /* Consistent with sidebar header/item padding */
-    margin-bottom: 5px; /* Add some space before the history items list */
+    padding: 5px 10px;
+    margin-bottom: 5px;
 }
 
 .clear-all-history-actual-btn {
     width: 100%;
     padding: 8px 10px;
-    font-size: 0.9em; /* Slightly smaller or same as other sidebar text */
-    color: #fff; /* White text */
-    background-color: #007bff; /* Primary blue, similar to .new-chat-btn */
+    font-size: 0.9em;
+    color: #fff;
+    background-color: #007bff;
     border: none;
-    border-radius: 5px; /* Consistent with other buttons */
+    border-radius: 5px;
     cursor: pointer;
     text-align: center;
     transition: background-color 0.2s ease-in-out;
-    display: block; /* Ensure it takes full width */
+    display: block;
 }
 
 .clear-all-history-actual-btn:hover {
-    background-color: #0056b3; /* Darker blue on hover */
+    background-color: #0056b3;
 }
 
-/* Adjustments for individual history item delete button */
 .chat-item .delete-history-item-btn {
     background-color: transparent;
-    color: #adb5bd; /* Lighter text color for less emphasis */
+    color: #adb5bd;
     border: none;
     padding: 0 5px;
-    font-size: 1.2em; /* Make the 'x' a bit larger */
+    font-size: 1.2em;
     line-height: 1;
     cursor: pointer;
-    float: right; /* Position to the right */
+    float: right;
     margin-left: 5px;
 }
 
 .chat-item .delete-history-item-btn:hover {
-    color: #ff4d4d; /* Reddish color on hover for delete action */
+    color: #ff4d4d;
 }
 
-/* Ensure chat item text and time don't overlap with delete button */
 .chat-item-text {
     overflow: hidden;
     text-overflow: ellipsis;
@@ -1306,67 +1349,63 @@ body.auth-body .main-content.auth-page {
 }
 
 .message.ai-message img {
-  display: block;        /* Helps with margin auto and layout */
-  width: 300px;         /* Define a fixed width for the image's display area */
-  height: 300px;        /* Define a fixed height for the image's display area */
-  object-fit: contain;  /* Scales the image to fit within this 180x180 box, centered, preserving aspect ratio */
-  max-width: 100%;      /* Ensures the 180px box itself doesn't overflow its parent (.message-content) if parent is narrower */
-  max-height: 100%;     /* Same for height, relative to the 180px specified or parent */
-  border-radius: 8px;   /* Rounded corners for the image's frame */
-  margin-top: 8px;      /* Space above the image */
-  margin-left: auto;    /* Centers the 180x180 box within the .message-content bubble if bubble is wider */
-  margin-right: auto;   /* Centers the 180x180 box */
-  background-color: rgba(0,0,0,0.03); /* Optional: light background for the image box itself to see its bounds clearly */
+  display: block;
+  width: 300px;
+  height: 300px;
+  object-fit: contain;
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 8px;
+  margin-top: 8px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: rgba(0,0,0,0.03);
 }
 
-/* Specific styling for the thinking message if it contains an image, though usually it won't */
 .message.ai-thinking img {
-  max-width: 100px; /* Smaller, if an image were ever in a thinking message */
+  max-width: 100px;
   max-height: 100px;
 } 
 
-/* Styles for the Clear All History button */
 .clear-all-history-container {
-    padding: 5px 10px; /* Consistent with sidebar header/item padding */
-    margin-bottom: 5px; /* Add some space before the history items list */
+    padding: 5px 10px;
+    margin-bottom: 5px;
 }
 
 .clear-all-history-actual-btn {
     width: 100%;
     padding: 8px 10px;
-    font-size: 0.9em; /* Slightly smaller or same as other sidebar text */
-    color: #fff; /* White text */
-    background-color: #007bff; /* Primary blue, similar to .new-chat-btn */
+    font-size: 0.9em;
+    color: #fff;
+    background-color: #007bff;
     border: none;
-    border-radius: 5px; /* Consistent with other buttons */
+    border-radius: 5px;
     cursor: pointer;
     text-align: center;
     transition: background-color 0.2s ease-in-out;
-    display: block; /* Ensure it takes full width */
+    display: block;
 }
 
 .clear-all-history-actual-btn:hover {
-    background-color: #0056b3; /* Darker blue on hover */
+    background-color: #0056b3;
 }
 
-/* Adjustments for individual history item delete button */
 .chat-item .delete-history-item-btn {
     background-color: transparent;
-    color: #adb5bd; /* Lighter text color for less emphasis */
+    color: #adb5bd;
     border: none;
     padding: 0 5px;
-    font-size: 1.2em; /* Make the 'x' a bit larger */
+    font-size: 1.2em;
     line-height: 1;
     cursor: pointer;
-    float: right; /* Position to the right */
+    float: right;
     margin-left: 5px;
 }
 
 .chat-item .delete-history-item-btn:hover {
-    color: #ff4d4d; /* Reddish color on hover for delete action */
+    color: #ff4d4d;
 }
 
-/* Ensure chat item text and time don't overlap with delete button */
 .chat-item-text {
     overflow: hidden;
     text-overflow: ellipsis;

@@ -73,11 +73,19 @@
                 </div>
                 <div class="chat-input-container">
                     <label for="image-upload-input" id="image-upload-label" class="chat-control-btn" title="Upload Image">
-                        <i class="fas fa-paperclip" id="upload-icon"></i>
-                        <img id="image-preview" src="#" alt="Image preview"/>
-                        <button id="remove-image-btn">&times;</button>
+                        <i class="fas fa-paperclip"></i>
                     </label>
                     <input type="file" id="image-upload-input" accept="image/*" style="display: none;">
+
+                    <div id="image-preview-container" style="display: none;">
+                        <img id="image-preview" src="#" alt="Image preview"/>
+                        <button id="remove-image-btn">&times;</button>
+                    </div>
+
+                    <button id="download-image-btn" style="display: none;" title="Download Image" class="chat-control-btn">
+                        <i class="fas fa-download"></i>
+                    </button>
+
                     <textarea id="chat-input" placeholder="输入您的问题..." data-translate-key="chatInputPlaceholder" rows="1"></textarea>
                     <button id="send-btn" class="chat-control-btn"><i class="fas fa-paper-plane"></i></button>
                 </div>
@@ -103,8 +111,12 @@
     <script src="js/script.js"></script>
 
 <footer class="site-footer">
-    <p><span class="lang-zh" data-translate-key="footerText">&copy; 2025 llama4中文版. 版权所有.</span><span class="lang-en" style="display:none;" data-translate-key="footerTextEn">&copy; 2024 llama4 Chinese Version. All rights reserved.</span></p>
-    <p>渝ICP备2025053282号</p>
+    <div class="footer-top-line">
+        <a data-translate-key="privacyPolicy">隐私政策</a> 
+        <a href="https://beian.miit.gov.cn" target="_blank" rel="nofollow" data-translate-key="icpRecord">渝ICP备2025053282号</a>
+    </div>
+    <p data-translate-key="copyrightText">&copy; 2025 AI Chat. 版权所有.</p>
+    <p><span data-translate-key="contactUs">联系我们</span>: ytsgabcde38@2925.com</p>
 </footer>
 
 </body>
