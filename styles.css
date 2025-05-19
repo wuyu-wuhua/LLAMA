@@ -198,7 +198,7 @@ a {
 
 /* 聊天界面样式 */
 .chat-container {
-    max-width: 1000px;
+    max-width: 1200px;
     margin: 0 auto;
     background-color: white;
     border-radius: var(--border-radius);
@@ -303,11 +303,11 @@ a {
 @keyframes flash-effect {
   0%, 100% {
     text-shadow:
-        0px 1px 0px #e8daef,
-        0px 2px 0px #dcd0e5,
-        0px 3px 0px #d0c6dc,
-        0px 4px 0px #c4bcc3,
-        0px 5px 0px #b8b2ca,
+        0px 1px 0px #d6eaf8,
+        0px 2px 0px #aed6f1,
+        0px 3px 0px #7fb3d5,
+        0px 4px 0px #85c1e9 ,
+        0px 5px 0px #3498db ,
         0px 6px 1px rgba(0,0,0,.1),
         0px 0px 5px rgba(0,0,0,.1), 0px 1px 3px rgba(0,0,0,.3),
         0px 3px 5px rgba(0,0,0,.2), 0px 5px 10px rgba(0,0,0,.25),
@@ -315,19 +315,19 @@ a {
   }
   50% {
     text-shadow:
-        0px 1px 0px #e8daef,
-        0px 2px 0px #dcd0e5,
-        0px 3px 0px #d0c6dc,
-        0px 4px 0px #c4bcc3,
-        0px 5px 0px #b8b2ca,
+        0px 1px 0px #d6eaf8,
+        0px 2px 0px #aed6f1,
+        0px 3px 0px #7fb3d5,
+        0px 4px 0px #85c1e9 ,
+        0px 5px 0px #3498db ,
         0px 6px 1px rgba(0,0,0,.1),
         0px 0px 5px rgba(0,0,0,.1), 0px 1px 3px rgba(0,0,0,.3),
         0px 3px 5px rgba(0,0,0,.2), 0px 5px 10px rgba(0,0,0,.25),
         0px 10px 10px rgba(0,0,0,.2), 0px 20px 20px rgba(0,0,0,.15),
         /* Added flash layers */
         0 0 7px rgba(255, 255, 255, 0.9),
-        0 0 12px rgba(220, 150, 255, 0.8), /* Light purple flash */
-        0 0 20px rgba(255, 105, 180, 0.7); /* Pink flash */
+        0 0 12px rgba(163, 228, 215, 0.8), /* Light purple flash */
+        0 0 20px rgba(26, 188, 156, 0.7); /* Pink flash */
   }
 }
 
@@ -466,8 +466,8 @@ a {
 
 #image-upload-label {
     position: relative;
-    width: 40px;
-    height: 40px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     background-color: var(--primary-color);
     color: white;
@@ -516,7 +516,7 @@ a {
 
 #chat-input {
     flex-grow: 1;
-    padding: 10px;
+    padding: 20px;
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius-medium);
     resize: none;
@@ -548,7 +548,7 @@ a {
 
 /* Ensure send button is also styled consistently if it wasn't fully circular before */
 #send-btn {
-    /* chat-control-btn already covers most styling */
+    padding: 30px;/* chat-control-btn already covers most styling */
 }
 
 .scenario-buttons {
@@ -569,7 +569,7 @@ a {
 }
 
 .scenario-btn {
-    padding: 12px;
+    padding: 17px;
     background-color: var(--hover-color);
     border-radius: var(--border-radius);
     font-size: 14px;

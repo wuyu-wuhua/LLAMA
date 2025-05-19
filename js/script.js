@@ -1,3 +1,10 @@
+let BASE_API_URL;
+if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    BASE_API_URL = 'http://localhost:3001'; // 本地测试 API 地址
+} else {
+    BASE_API_URL = 'https://erlangjiuye.com'; // 生产环境 API 地址
+}
+
 let currentScenario = 'general'; // Default scenario
 let chatHistory = []; // This will now be mostly managed by backend, but can be used for temporary client-side state if needed
 const MAX_HISTORY_ITEMS = 5; // This might become less relevant if backend handles full history
@@ -239,7 +246,7 @@ async function loadChatHistory() {
     clearAllBtn.addEventListener('click', async () => {
         if (confirm(getTranslatedString('confirmClearAllHistory') || 'Are you sure you want to delete all chat history?')) {
             try {
-                const response = await fetch('/api/history', { method: 'DELETE' });
+                const response = await fetch(`${BASE_API_URL}/api/history`, { method: 'DELETE' });
                 if (response.ok) {
                     loadChatHistory(); // Refresh history list
                     // If the current conversation was deleted, reset the chat view
@@ -260,20 +267,20 @@ async function loadChatHistory() {
     chatHistoryPanel.appendChild(clearAllBtnContainer);
 
     try {
-        const response = await fetch('/api/history');
-        if (!response.ok) {
-            console.error('Failed to fetch chat history');
-            chatHistoryPanel.innerHTML += `<p>${getTranslatedString('errorLoadingHistory') || 'Error loading history.'}</p>`;
-            return;
+        const historyListResponse = await fetch(`${BASE_API_URL}/api/history`);
+        if (!historyListResponse.ok) {
+            throw new Error(`Failed to load history list: ${historyListResponse.status}`);
         }
-        const historySummaries = await response.json();
+        const historyData = await historyListResponse.json();
 
-        if (historySummaries.length === 0) {
-            chatHistoryPanel.innerHTML += `<p>${getTranslatedString('noHistoryFound') || 'No chat history found.'}</p>`;
-            return;
+        // Sort history data by last updated timestamp, newest first
+        historyData.sort((a, b) => new Date(b.last_updated) - new Date(a.last_updated));
+
+        if (historyData.length === 0) {
+            chatHistoryPanel.innerHTML += `<p class="no-history-message">${getTranslatedString('noHistory') || 'No chat history yet.'}</p>`;
         }
 
-        historySummaries.forEach(item => {
+        historyData.forEach(item => {
             const chatItem = document.createElement('div');
             chatItem.className = 'chat-item';
             chatItem.dataset.id = item.id;
@@ -303,7 +310,7 @@ async function loadChatHistory() {
                 e.stopPropagation(); // Prevent chatItem click event
                 if (confirm(getTranslatedString('confirmDeleteChat', { title: titleText }) || `Are you sure you want to delete "${titleText}"?`)) {
                     try {
-                        const deleteResponse = await fetch(`/api/history/${item.id}`, { method: 'DELETE' });
+                        const deleteResponse = await fetch(`${BASE_API_URL}/api/history/${item.id}`, { method: 'DELETE' });
                         if (deleteResponse.ok) {
                             loadChatHistory(); // Refresh the list
                             if (currentConversationId === item.id) {
@@ -348,7 +355,7 @@ async function loadConversation(conversationId) {
     if (!chatMessages) return;
 
     try {
-        const response = await fetch(`/api/history/${conversationId}`);
+        const response = await fetch(`${BASE_API_URL}/api/history/${conversationId}`);
         if (!response.ok) {
             const errorKey = 'errorLoadingConversation';
             const errorText = getTranslatedString(errorKey) || 'Error loading conversation.';
@@ -473,7 +480,7 @@ function initChat() {
         addMessage(thinkingMessageText, 'ai-thinking');
 
         const endpoint = currentScenario === 'aipainting' ? '/api/image/generate' : '/api/chat';
-        const fullApiUrl = endpoint;
+        const fullApiUrl = `${BASE_API_URL}${endpoint}`;
 
         let requestBody = {
             scenario: currentScenario,
@@ -528,7 +535,7 @@ function initChat() {
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({ message: response.statusText }));
-                console.error(`API Error (${response.status}) from ${endpoint}:`, errorData);
+                console.error(`API Error (${response.status}) from ${fullApiUrl}:`, errorData);
                 let errorMsg = getTranslatedString('aiErrorReply', currentLang) || '抱歉，AI回复出错。';
                 if (errorData && errorData.error) {
                     errorMsg += ` (${errorData.error})`
@@ -553,7 +560,7 @@ function initChat() {
             }
 
         } catch (error) {
-            console.error(`Error calling ${endpoint} API:`, error);
+            console.error(`Error calling ${fullApiUrl} API:`, error);
             removeThinkingMessage();
             let networkErrorMsg = getTranslatedString('aiErrorNetwork', currentLang) || '网络错误或API无法访问，请稍后再试。';
             if (error.message) {
@@ -943,3 +950,4 @@ function resetChatViewToWelcome() {
     const generalBtn = document.querySelector('.scenario-btn[data-scenario="general"]');
     if (generalBtn) generalBtn.classList.add('active');
 } 
+ 

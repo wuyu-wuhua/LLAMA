@@ -8,8 +8,8 @@ const translations = {
     sidebarReviews: { zh: "用户评价", en: "User Reviews" },
     historyTitle: { zh: "历史对话", en: "Chat History" },
     newChatButton: { zh: "新对话", en: "New Chat" },
-    footerText: { zh: "&copy; 2024 llama4中文版. 版权所有.", en: "&copy; 2024 llama4 Chinese Version. All rights reserved." },
-    footerTextEn: { zh: "&copy; 2024 llama4中文版. 版权所有.", en: "&copy; 2024 llama4 Chinese Version. All rights reserved." },
+    footerText: { zh: "&copy; 2025 llama4中文版. 版权所有.", en: "&copy; 2025 llama4 Chinese Version. All rights reserved." },
+    footerTextEn: { zh: "&copy; 2025 llama4中文版. 版权所有.", en: "&copy; 2025 llama4 Chinese Version. All rights reserved." },
     langToggleAriaLabel: { zh: "切换语言", en: "Toggle language" },
 
     // Chat History UI (NEW and EXISTING relevant keys)
@@ -19,7 +19,7 @@ const translations = {
     confirmClearAllHistory: { zh: '您确定要删除所有聊天记录吗？', en: 'Are you sure you want to delete all chat history?' },
     errorDeletingHistory: { zh: "删除历史记录时出错。", en: "Error deleting history." },
     errorLoadingHistory: { zh: '加载历史记录失败。', en: 'Error loading history.' },
-    noHistoryFound: { zh: '未找到聊天记录。', en: 'No chat history found.' },
+    noHistory: { zh: '暂无历史记录', en: 'No history yet.' },
     deleteChat: { zh: '删除对话', en: 'Delete chat' },
     confirmDeleteChat: { zh: '您确定要删除 "{title}" 吗？', en: 'Are you sure you want to delete "{title}"?' },
     errorDeletingChat: { zh: '删除对话失败。', en: 'Error deleting chat.' },
