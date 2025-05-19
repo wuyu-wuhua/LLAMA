@@ -64,7 +64,7 @@ export async function onRequestPost(context) {
     if (!imageUrl) {
       return new Response(JSON.stringify({ error: 'Image generation timed out.' }), { status: 504, headers: { 'Content-Type': 'application/json' } });
     }
-    return new Response(JSON.stringify({ url: imageUrl, taskId }), {
+    return new Response(JSON.stringify({ reply: imageUrl, type: 'image', taskId }), {
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {

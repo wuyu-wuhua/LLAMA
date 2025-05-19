@@ -19,6 +19,7 @@ export async function onRequestGet(context) {
       lastUpdated: key.metadata?.updated || new Date().toISOString(),
       scenario: 'general', // 可根据实际需求扩展
       icon: 'fas fa-comments',
+      messages: history // 新增：完整消息数组
     });
   }
   // 按更新时间倒序

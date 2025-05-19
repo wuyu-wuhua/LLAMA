@@ -126,8 +126,6 @@ function initImageUpload() {
                 removeImageBtn.style.display = 'inline-block';
             };
             reader.readAsDataURL(file);
-            // 关键：重置 input.value，保证下次选同一张图片也能触发 change
-            this.value = '';
         } else {
             imagePreview.src = '#';
             imagePreviewContainer.style.display = 'none';
