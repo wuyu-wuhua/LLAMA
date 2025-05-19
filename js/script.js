@@ -9,9 +9,151 @@ let currentScenario = 'general'; // Default scenario
 let chatHistory = []; // This will now be mostly managed by backend, but can be used for temporary client-side state if needed
 const MAX_HISTORY_ITEMS = 5; // This might become less relevant if backend handles full history
 let currentConversationId = null; // ADDED: To track the active conversation
+let currentImageSize = '1024*1024'; // 默认尺寸
+const IMAGE_KEYWORDS = ['画', '绘画', '生成', '创作', '图片', 'image', 'draw', 'paint', 'create', 'generate'];
 
 // Global store for typewriter timeout IDs to clear them
 const typewriterTimeouts = new Map(); // Map<Element, number>
+
+// Placeholder for sendMessageHandler - User needs to define this properly
+function sendMessageHandler() {
+    console.warn("sendMessageHandler is called, but needs full implementation for sending messages.");
+    const chatInput = document.getElementById('chat-input');
+    const imageUploadInput = document.getElementById('image-upload-input');
+    let messageText = chatInput ? chatInput.value.trim() : "";
+    let file = imageUploadInput && imageUploadInput.files[0] ? imageUploadInput.files[0] : null;
+
+    if (!messageText && !file) {
+        // console.log("No message text or file to send.");
+        return; 
+    }
+    
+    // Call the actual sendMessage function
+    if (typeof sendMessage === 'function') {
+        sendMessage(messageText, file); // sendMessage is defined at the end of the script
+    } else {
+        console.error("sendMessage function is not defined at the point of call by sendMessageHandler.");
+    }
+    
+    if (chatInput) {
+        chatInput.value = ""; // Clear text input
+        chatInput.style.height = 'auto'; // Reset height
+        chatInput.style.height = (chatInput.scrollHeight) + 'px'; // Adjust to new content (empty)
+    }
+
+    if (imageUploadInput && imageUploadInput.files[0]) { // If a file was part of the message
+        const removeImageBtn = document.getElementById('remove-image-btn');
+        const imagePreviewContainer = document.getElementById('image-preview-container');
+        const imagePreview = document.getElementById('image-preview');
+
+        imageUploadInput.value = ''; // Clear the file input
+        if(imagePreview) imagePreview.src = '#';
+        if(imagePreviewContainer) imagePreviewContainer.style.display = 'none';
+        if(removeImageBtn) removeImageBtn.style.display = 'none';
+    }
+    
+    // Focus input and manage image size selector visibility
+    if (chatInput) chatInput.focus();
+    
+    const currentChatInputVal = chatInput ? chatInput.value.trim() : ""; // Should be empty now
+    const currentImageFile = imageUploadInput && imageUploadInput.files[0] ? imageUploadInput.files[0] : null; // Should be null now
+
+    if (!currentImageFile && !IMAGE_KEYWORDS.some(k => currentChatInputVal.includes(k))) {
+        if (typeof hideImageSizeSelector === 'function') {
+            hideImageSizeSelector();
+        }
+    }
+}
+
+function initChat() {
+    const sendBtn = document.getElementById('send-btn');
+    const chatInput = document.getElementById('chat-input');
+
+    if (!sendBtn || !chatInput) {
+        // console.warn("Essential chat elements (send button or input) not found, initChat skipped.");
+        return;
+    }
+
+    sendBtn.addEventListener('click', sendMessageHandler);
+    chatInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessageHandler();
+        }
+    });
+    chatInput.addEventListener('input', function() { // Auto-resize
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight) + 'px';
+    });
+
+    // Logic for showing/hiding image size selector based on chat input
+    chatInput.addEventListener('input', function() {
+        const val = this.value;
+        if (IMAGE_KEYWORDS.some(k => val.includes(k))) {
+            if (typeof showImageSizeSelector === 'function') showImageSizeSelector();
+        } else {
+            const imageUploadInputElement = document.getElementById('image-upload-input');
+            // Hide only if no image is selected
+            if (imageUploadInputElement && !imageUploadInputElement.files[0]) {
+                if (typeof hideImageSizeSelector === 'function') hideImageSizeSelector();
+            } else if (!imageUploadInputElement) { // If no image upload input at all
+                 if (typeof hideImageSizeSelector === 'function') hideImageSizeSelector();
+            }
+        }
+    });
+}
+
+function initImageUpload() {
+    const imageUploadInput = document.getElementById('image-upload-input');
+    const imageUploadLabel = document.getElementById('image-upload-label');
+    const imagePreviewContainer = document.getElementById('image-preview-container');
+    const imagePreview = document.getElementById('image-preview');
+    const removeImageBtn = document.getElementById('remove-image-btn');
+
+    if (!imageUploadInput || !imageUploadLabel || !imagePreviewContainer || !imagePreview || !removeImageBtn) {
+        return;
+    }
+
+    imageUploadLabel.addEventListener('click', () => imageUploadInput.click());
+
+    imageUploadInput.addEventListener('change', function() {
+        const file = this.files && this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imagePreview.src = e.target.result;
+                imagePreviewContainer.style.display = 'block';
+                removeImageBtn.style.display = 'inline-block';
+            };
+            reader.readAsDataURL(file);
+            // 关键：重置 input.value，保证下次选同一张图片也能触发 change
+            this.value = '';
+        } else {
+            imagePreview.src = '#';
+            imagePreviewContainer.style.display = 'none';
+            removeImageBtn.style.display = 'none';
+        }
+        // 只要有文件就显示尺寸选择器
+        if (file && typeof showImageSizeSelector === 'function') showImageSizeSelector();
+        if (!file) {
+            const chatInputVal = document.getElementById('chat-input') ? document.getElementById('chat-input').value : "";
+            if (!IMAGE_KEYWORDS.some(k => chatInputVal.includes(k))) {
+                if (typeof hideImageSizeSelector === 'function') hideImageSizeSelector();
+            }
+        }
+    });
+
+    removeImageBtn.addEventListener('click', function() {
+        imageUploadInput.value = '';
+        imagePreview.src = '#';
+        imagePreviewContainer.style.display = 'none';
+        removeImageBtn.style.display = 'none';
+        const chatInputVal = document.getElementById('chat-input') ? document.getElementById('chat-input').value.trim() : "";
+        if (!IMAGE_KEYWORDS.some(k => chatInputVal.includes(k))) {
+            if (typeof hideImageSizeSelector === 'function') hideImageSizeSelector();
+        }
+    });
+}
 
 // Helper function to get translation keys for scenario-specific texts
 function getScenarioTextKeys(scenario) {
@@ -158,6 +300,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // to avoid being blocked by errors, but also ensure they run on all pages.
     initPageParticles(); // Initialize page particles effect
     initCustomPointer(); // Initialize custom mouse pointer
+    initImageSizeSelector();
 });
 
 // Called by toggleLanguage in translation.js after language is set
@@ -423,7 +566,37 @@ function addMessage(text, sender, isNewConversationStart = false, messageType = 
         const img = document.createElement('img');
         img.src = text; // text is the image URL
         img.alt = getTranslatedString('aiGeneratedImageAlt') || "AI Generated Image";
+        img.style.position = 'relative';
         messageContentDiv.appendChild(img);
+
+        // 下载按钮容器
+        const downloadBtn = document.createElement('button');
+        downloadBtn.className = 'ai-image-download-btn';
+        downloadBtn.title = getTranslatedString('downloadImage') || '下载图片';
+        downloadBtn.style.position = 'absolute';
+        downloadBtn.style.right = '10px';
+        downloadBtn.style.bottom = '10px';
+        downloadBtn.style.background = 'rgba(0,0,0,0.6)';
+        downloadBtn.style.color = '#fff';
+        downloadBtn.style.border = 'none';
+        downloadBtn.style.borderRadius = '6px';
+        downloadBtn.style.padding = '4px 10px';
+        downloadBtn.style.fontSize = '14px';
+        downloadBtn.style.cursor = 'pointer';
+        downloadBtn.style.zIndex = '2';
+        downloadBtn.innerHTML = `<i class='fas fa-download'></i> ${getTranslatedString('downloadImage') || '下载'}`;
+        downloadBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const a = document.createElement('a');
+            a.href = img.src;
+            a.download = 'llama4-image.png';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        });
+        // 让 messageContentDiv 相对定位以放置按钮
+        messageContentDiv.style.position = 'relative';
+        messageContentDiv.appendChild(downloadBtn);
     } else {
         let processedText = text;
         if (sender === 'ai' || messageType === 'text') { // Apply <br> for AI text or any explicit text message
@@ -445,160 +618,6 @@ function removeThinkingMessage() {
     }
 }
 
-function initChat() {
-    const sendBtn = document.getElementById('send-btn');
-    const chatInput = document.getElementById('chat-input');
-    const chatMessages = document.getElementById('chat-messages');
-
-    // Make sendMessage an async function to handle await properly
-    async function sendMessage() {
-        const messageText = chatInput.value.trim();
-        const imageUploadInput = document.getElementById('image-upload-input');
-        const file = imageUploadInput ? imageUploadInput.files[0] : null;
-
-        if (!messageText && !file) return; // Need either text or a file (for certain scenarios)
-
-        // Add user message (text part)
-        if (messageText) {
-            addMessage(messageText, 'user');
-        }
-        // If there's a file, we might want to display a preview or a message about the upload
-        // For now, we'll rely on the AI's response to confirm image processing.
-        
-        chatInput.value = '';
-        chatInput.style.height = 'auto';
-        if (imageUploadInput) imageUploadInput.value = ''; // Clear file input
-        // Visually remove preview if any (assuming removeImagePreview function exists or is added)
-        if (typeof removeImagePreview === 'function') removeImagePreview(); 
-
-        chatInput.focus();
-
-        let thinkingMessageText = getTranslatedString('aiThinking', currentLang) || 'AI正在思考中...';
-        if (currentScenario === 'aipainting') {
-            thinkingMessageText = getTranslatedString('aiPaintingInProgress', currentLang) || 'AI正在绘画中...';
-        }
-        addMessage(thinkingMessageText, 'ai-thinking');
-
-        const endpoint = currentScenario === 'aipainting' ? '/api/image/generate' : '/api/chat';
-        const fullApiUrl = `${BASE_API_URL}${endpoint}`;
-
-        let requestBody = {
-            scenario: currentScenario,
-            conversationId: currentConversationId
-        };
-
-        if (currentScenario === 'aipainting') {
-            if (!messageText && !file) { // For AI painting, prompt (text) is primary
-                removeThinkingMessage();
-                addMessage(getTranslatedString('promptRequiredForPainting', currentLang) || '请输入绘画提示词。', 'ai');
-                return;
-            }
-            requestBody.prompt = messageText; // Image generation uses the text as prompt
-            // Negative prompt could be added here if UI supports it
-        } else if (currentScenario === 'imageanalysis') {
-            if (!file) {
-                removeThinkingMessage();
-                addMessage(getTranslatedString('imageRequiredForAnalysis', currentLang) || '请上传需要分析的图片。', 'ai');
-                return;
-            }
-            if (messageText) requestBody.message = messageText; // Optional additional text for image analysis
-            
-            // Convert file to base64 to send in JSON (if backend expects that)
-            // This is a common pattern, adjust if backend handles multipart/form-data
-            try {
-                const base64Image = await toBase64(file);
-                requestBody.image = base64Image; // Assuming backend expects 'image' field with base64 data
-            } catch (error) {
-                console.error('Error converting image to base64:', error);
-                removeThinkingMessage();
-                addMessage(getTranslatedString('errorProcessingImage', currentLang) || '处理图片失败。', 'ai');
-                return;
-            }
-        } else {
-            // General chat
-            if (!messageText) { // Should not happen if initial check is good, but as safeguard
-                 removeThinkingMessage(); return; 
-            }
-            requestBody.message = messageText;
-        }
-
-        try {
-            const response = await fetch(fullApiUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(requestBody)
-            });
-
-            removeThinkingMessage(); // Remove thinking message once response headers are received
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({ message: response.statusText }));
-                console.error(`API Error (${response.status}) from ${fullApiUrl}:`, errorData);
-                let errorMsg = getTranslatedString('aiErrorReply', currentLang) || '抱歉，AI回复出错。';
-                if (errorData && errorData.error) {
-                    errorMsg += ` (${errorData.error})`
-                }
-                addMessage(errorMsg, 'ai');
-                return;
-            }
-
-            const data = await response.json();
-
-            if (data && data.reply) {
-                addMessage(data.reply, 'ai', false, data.type || 'text');
-                if (data.conversationId) {
-                    const previousConversationId = currentConversationId;
-                    currentConversationId = data.conversationId;
-                    if (!previousConversationId && currentConversationId) {
-                        loadChatHistory(); // Refresh history if a new conversation was started
-                    }
-                }
-            } else {
-                addMessage(getTranslatedString('aiEmptyReply', currentLang) || 'AI没有返回有效回复。', 'ai');
-            }
-
-        } catch (error) {
-            console.error(`Error calling ${fullApiUrl} API:`, error);
-            removeThinkingMessage();
-            let networkErrorMsg = getTranslatedString('aiErrorNetwork', currentLang) || '网络错误或API无法访问，请稍后再试。';
-            if (error.message) {
-                networkErrorMsg += ` (${error.message})`
-            }
-            addMessage(networkErrorMsg, 'ai');
-        }
-    }
-
-    sendBtn.addEventListener('click', sendMessage);
-    chatInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            sendMessage();
-        }
-    });
-    chatInput.addEventListener('input', function() {
-        this.style.height = 'auto';
-        this.style.height = (this.scrollHeight) + 'px';
-    });
-
-    const newChatBtn = document.querySelector('.new-chat-btn');
-    if (newChatBtn) {
-        newChatBtn.addEventListener('click', function() {
-            resetChatViewToWelcome();
-            currentConversationId = null; // Clear current conversation ID
-            currentScenario = 'general'; // Reset to default scenario
-            // Deactivate all scenario buttons
-            const scenarioBtns = document.querySelectorAll('.scenario-btn');
-            scenarioBtns.forEach(b => b.classList.remove('active'));
-             // Optionally, highlight the 'general' scenario button if it exists
-            const generalScenarioBtn = document.querySelector('.scenario-btn[data-scenario="general"]');
-            if (generalScenarioBtn) generalScenarioBtn.classList.add('active');
-            loadChatHistory(); // Refresh history list (might not be necessary but good for consistency)
-        });
-    }
-}
-
 function initScenarioButtons() {
     const scenarioBtns = document.querySelectorAll('.scenario-btn');
     const chatMessages = document.getElementById('chat-messages');
@@ -611,6 +630,13 @@ function initScenarioButtons() {
             currentScenario = this.dataset.scenario; 
             currentConversationId = null; 
             
+            // 新增：AI绘画、图像解析、以图生图场景自动显示图片尺寸选择器
+            if (["aipainting", "imageanalysis", "imagetoimage"].includes(currentScenario)) {
+                if (typeof showImageSizeSelector === 'function') showImageSizeSelector();
+            } else {
+                if (typeof hideImageSizeSelector === 'function') hideImageSizeSelector();
+            }
+
             const { titleKey, messageKey, greetingKey } = getScenarioTextKeys(currentScenario);
 
             const welcomeTitle = getTranslatedString(titleKey, currentLang);
@@ -734,65 +760,29 @@ function initMarqueeHoverPause() {
     }
 }
 
-function initImageUpload() {
-    const imageUploadLabel = document.getElementById('image-upload-label'); // This is the paperclip icon's label
-    const fileInput = document.getElementById('image-upload-input');
-    
-    const imagePreviewContainer = document.getElementById('image-preview-container');
-    const imagePreview = document.getElementById('image-preview');
-    const removeImageBtn = document.getElementById('remove-image-btn');
-    const downloadImageBtn = document.getElementById('download-image-btn'); 
-    
-    const chatInput = document.getElementById('chat-input'); // Keep for focus logic if any
-
-    if (!imageUploadLabel || !fileInput || !imagePreviewContainer || !imagePreview || !removeImageBtn || !downloadImageBtn || !chatInput) {
-        console.warn('Some image upload related elements are missing in the DOM.');
-        return;
-    }
-
-    let uploadedFile = null; // Store the file object for download
-
-    fileInput.addEventListener('change', function(event) {
-        const file = event.target.files[0];
-        if (file && file.type.startsWith('image/')) {
-            uploadedFile = file; // Store the file
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                imagePreview.src = e.target.result;
-                imagePreviewContainer.style.display = 'block'; // Show preview container
-                removeImageBtn.style.display = 'block';       // Show remove button
-                downloadImageBtn.style.display = 'inline-flex'; // Show download button (uses .chat-control-btn styles)
-                // imageUploadLabel.style.display = 'none'; // Keep paperclip visible as per thought process
-            }
-            reader.readAsDataURL(file);
-        } else {
-            uploadedFile = null;
+function initImageSizeSelector() {
+    const selector = document.getElementById('image-size-selector');
+    if (!selector) return;
+    selector.addEventListener('click', e => {
+        if (e.target.classList.contains('size-btn')) {
+            currentImageSize = e.target.dataset.size;
+            setActiveSizeBtn(currentImageSize);
         }
     });
+    setActiveSizeBtn(currentImageSize);
+}
 
-    removeImageBtn.addEventListener('click', function() {
-        imagePreview.src = '#';
-        uploadedFile = null;
-        imagePreviewContainer.style.display = 'none'; // Hide preview container
-        removeImageBtn.style.display = 'none';       // Hide remove button
-        downloadImageBtn.style.display = 'none';    // Hide download button
-        fileInput.value = ''; // Reset file input
-        // imageUploadLabel.style.display = 'inline-flex'; // Ensure paperclip is visible if it was hidden
-    });
-
-    downloadImageBtn.addEventListener('click', function() {
-        if (uploadedFile && imagePreview.src && imagePreview.src !== '#') {
-            const link = document.createElement('a');
-            link.href = imagePreview.src; // Use the Data URL from the preview
-            
-            // Try to use original file name for download, fallback to generic name
-            link.download = uploadedFile.name || 'downloaded-image.png'; 
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        } else {
-            alert(getTranslatedString('errorProcessingImage') || 'Could not download image. No image selected or error in processing.');
-        }
+function showImageSizeSelector() {
+    const selector = document.getElementById('image-size-selector');
+    if (selector) selector.style.display = 'flex';
+}
+function hideImageSizeSelector() {
+    const selector = document.getElementById('image-size-selector');
+    if (selector) selector.style.display = 'none';
+}
+function setActiveSizeBtn(size) {
+    document.querySelectorAll('.size-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.size === size);
     });
 }
 
@@ -958,5 +948,67 @@ function resetChatViewToWelcome() {
     scenarioBtns.forEach(b => b.classList.remove('active'));
     const generalBtn = document.querySelector('.scenario-btn[data-scenario="general"]');
     if (generalBtn) generalBtn.classList.add('active');
+}
+
+function sendMessage(messageText, file) {
+    // 发送前先显示用户消息
+    if (messageText) {
+        addMessage(messageText, 'user');
+    }
+    // AI思考中提示
+    addMessage('<i class="fas fa-spinner fa-spin"></i> AI思考中...', 'ai-thinking');
+
+    // 构造请求体
+    let url = '';
+    let body = {};
+    let isImage = false;
+    if (currentScenario === 'aipainting') {
+        url = BASE_API_URL + '/api/image/generate';
+        body = {
+            prompt: messageText,
+            size: currentImageSize,
+            scenario: 'aipainting',
+            conversationId: currentConversationId
+        };
+        isImage = true;
+    } else {
+        url = BASE_API_URL + '/api/chat';
+        body = {
+            message: messageText,
+            scenario: currentScenario,
+            conversationId: currentConversationId
+        };
+    }
+
+    // 发送请求
+    fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+    })
+    .then(res => res.json())
+    .then(data => {
+        removeThinkingMessage();
+        if (data.error) {
+            addMessage('❌ ' + (data.error || 'AI服务异常'), 'ai');
+            return;
+        }
+        if (isImage && data.reply) {
+            // AI绘画
+            addMessage(data.reply, 'ai', false, 'image');
+        } else if (data.reply) {
+            addMessage(data.reply, 'ai');
+        } else {
+            addMessage('AI无回复', 'ai');
+        }
+        if (data.conversationId) {
+            currentConversationId = data.conversationId;
+        }
+        loadChatHistory(); // 刷新历史
+    })
+    .catch(err => {
+        removeThinkingMessage();
+        addMessage('❌ 网络错误或服务器异常', 'ai');
+    });
 } 
  

@@ -11,7 +11,7 @@ const translations = {
     // Footer translations
     privacyPolicy: { zh: "隐私政策", en: "Privacy Policy" },
     icpRecord: { zh: "渝ICP备2025053282号", en: "ICP Record 2025053282" }, // Simplified English, adjust as needed
-    copyrightText: { zh: "&copy; 2025 AI Chat. 版权所有.", en: "&copy; 2025 AI Chat. All rights reserved." },
+    copyrightText: { zh: "&copy; 2025 llama4中文版. 版权所有.", en: "&copy; 2025 llama4 Chinese version. All rights reserved." },
     contactUs: { zh: "联系我们", en: "Contact Us" },
     langToggleAriaLabel: { zh: "切换语言", en: "Toggle language" },
 

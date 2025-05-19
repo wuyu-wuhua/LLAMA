@@ -2,44 +2,67 @@ export async function onRequestPost(context) {
   try {
     const { request, env } = context;
     const body = await request.json();
-
     const { scenario, message, conversationId } = body;
-    const apiKey = env.DASHSCOPE_API_KEY; // Access your API key
+    const apiKey = env.DASHSCOPE_API_KEY;
+    const kv = env.CHAT_HISTORY_KV;
 
-    // TODO: Implement your actual chat logic here
-    // This will likely involve:
-    // 1. If conversationId is provided, retrieve existing conversation context (from KV, D1, or other DB).
-    // 2. Constructing the request to the DashScope API (or your chosen AI service)
-    //    using the `message`, `scenario`, `apiKey`, and any conversation history.
-    // 3. Sending the request to the AI service.
-    // 4. Receiving the response from the AI service.
-    // 5. Processing the AI's response.
-    // 6. If it's a new conversation or if you need to save the state,
-    //    generate a new conversationId if one wasn't provided or if it's a new chat.
-    // 7. Save the new message(s) and AI reply to your chosen persistent storage
-    //    associated with the conversationId.
+    if (!apiKey) {
+      return new Response(JSON.stringify({ error: "API key is not configured." }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+    }
+    if (!message) {
+      return new Response(JSON.stringify({ error: "No message provided." }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+    }
 
-    console.log(`Received chat request: scenario=${scenario}, message=${message}, conversationId=${conversationId}`);
-    console.log(`Using API Key: ${apiKey ? 'Yes (masked for security)' : 'No'}`);
+    // 1. 读取历史消息
+    let history = [];
+    let convId = conversationId;
+    if (convId) {
+      const historyStr = await kv.get(convId);
+      if (historyStr) {
+        history = JSON.parse(historyStr);
+      }
+    } else {
+      convId = `conv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    }
 
+    // 2. 构建消息数组
+    const messages = [
+      { role: "system", content: "You are a helpful assistant." },
+      ...history,
+      { role: "user", content: message }
+    ];
 
-    // Placeholder response - REPLACE WITH ACTUAL AI RESPONSE LOGIC
-    const aiReply = `Placeholder AI reply for: "${message}" in scenario "${scenario}".`;
-    const newOrExistingConversationId = conversationId || `conv_${Date.now()}`; // Generate a simple new ID if none
-
-    const responsePayload = {
-      reply: aiReply,
-      conversationId: newOrExistingConversationId,
-      type: 'text', // Assuming text response, adjust if different
+    // 3. 调用 DashScope OpenAI 兼容接口
+    const dashscopeUrl = "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions";
+    const payload = {
+      model: "qwen-plus",
+      messages,
     };
+    const resp = await fetch(dashscopeUrl, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${apiKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+    if (!resp.ok) {
+      const err = await resp.text();
+      return new Response(JSON.stringify({ error: err }), { status: resp.status, headers: { 'Content-Type': 'application/json' } });
+    }
+    const data = await resp.json();
+    const aiMsg = data.choices?.[0]?.message?.content || "AI无回复";
 
-    return new Response(JSON.stringify(responsePayload), {
+    // 4. 保存历史
+    const newHistory = [...history, { role: "user", content: message }, { role: "assistant", content: aiMsg }];
+    await kv.put(convId, JSON.stringify(newHistory));
+
+    // 5. 返回响应
+    return new Response(JSON.stringify({ reply: aiMsg, conversationId: convId, type: 'text' }), {
       headers: { 'Content-Type': 'application/json' },
     });
-
   } catch (error) {
-    console.error('Error in /api/chat function:', error);
-    return new Response(JSON.stringify({ error: error.message || 'Failed to process chat request' }), {
+    return new Response(JSON.stringify({ error: error.message || 'Failed to process chat request due to an internal error.' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });

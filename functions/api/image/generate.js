@@ -1,41 +1,74 @@
 export async function onRequestPost(context) {
   try {
     const { request, env } = context;
-    const body = await request.json();
-
-    const { scenario, prompt, conversationId, image } = body; // `image` might be base64 for image-to-image
     const apiKey = env.DASHSCOPE_API_KEY;
-
-    // TODO: Implement your actual image generation logic here
-    // This will likely involve:
-    // 1. Determining if it's text-to-image (AIPainting) or image-to-image (ImageToImage, if you implement that scenario via this endpoint).
-    // 2. Constructing the request to the DashScope image generation API (or similar)
-    //    using the `prompt`, `apiKey`, and potentially the `image` data.
-    // 3. Sending the request to the AI service.
-    // 4. Receiving the image URL or image data in response.
-    // 5. Processing the response (e.g., if it's raw data, you might need to store it and return a URL).
-    // 6. Managing conversationId and saving relevant data as in the /api/chat function.
-
-    console.log(`Received image generate request: scenario=${scenario}, prompt=${prompt}, conversationId=${conversationId}`);
-    console.log(`Using API Key: ${apiKey ? 'Yes (masked for security)' : 'No'}`);
-
-    // Placeholder response - REPLACE WITH ACTUAL IMAGE GENERATION LOGIC
-    const imageUrl = 'https://via.placeholder.com/512x512.png?text=Generated+Image+for+' + encodeURIComponent(prompt);
-    const newOrExistingConversationId = conversationId || `conv_img_${Date.now()}`;
-
-    const responsePayload = {
-      reply: imageUrl, // This should be the URL to the generated image or base64 data if handled differently by frontend
-      conversationId: newOrExistingConversationId,
-      type: 'image',
+    if (!apiKey) {
+      return new Response(JSON.stringify({ error: "API key is not configured." }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+    }
+    const body = await request.json();
+    const { prompt, negative_prompt = '', size = '1024*1024' } = body;
+    if (!prompt) {
+      return new Response(JSON.stringify({ error: "No prompt provided." }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+    }
+    // 1. 提交图片生成任务
+    const submitUrl = 'https://dashscope.aliyuncs.com/api/v1/services/aigc/text2image/image-synthesis';
+    const submitPayload = {
+      model: 'wanx2.1-t2i-turbo',
+      input: {
+        prompt,
+        negative_prompt
+      },
+      parameters: {
+        size,
+        n: 1
+      }
     };
-
-    return new Response(JSON.stringify(responsePayload), {
+    const submitResp = await fetch(submitUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+        'X-DashScope-Async': 'enable'
+      },
+      body: JSON.stringify(submitPayload)
+    });
+    if (!submitResp.ok) {
+      const err = await submitResp.text();
+      return new Response(JSON.stringify({ error: err }), { status: submitResp.status, headers: { 'Content-Type': 'application/json' } });
+    }
+    const submitData = await submitResp.json();
+    const taskId = submitData.output?.task_id;
+    if (!taskId) {
+      return new Response(JSON.stringify({ error: 'No task_id returned from DashScope.' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+    }
+    // 2. 轮询任务状态，最多轮询10次，每次间隔2秒
+    const pollUrl = `https://dashscope.aliyuncs.com/api/v1/tasks/${taskId}`;
+    let imageUrl = null;
+    let status = '';
+    for (let i = 0; i < 10; i++) {
+      await new Promise(res => setTimeout(res, 2000));
+      const pollResp = await fetch(pollUrl, {
+        method: 'GET',
+        headers: { 'Authorization': `Bearer ${apiKey}` }
+      });
+      if (!pollResp.ok) continue;
+      const pollData = await pollResp.json();
+      status = pollData.output?.task_status;
+      if (status === 'SUCCEEDED') {
+        imageUrl = pollData.output?.results?.[0]?.url;
+        break;
+      } else if (status === 'FAILED') {
+        return new Response(JSON.stringify({ error: 'Image generation failed.' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+      }
+    }
+    if (!imageUrl) {
+      return new Response(JSON.stringify({ error: 'Image generation timed out.' }), { status: 504, headers: { 'Content-Type': 'application/json' } });
+    }
+    return new Response(JSON.stringify({ url: imageUrl, taskId }), {
       headers: { 'Content-Type': 'application/json' },
     });
-
   } catch (error) {
-    console.error('Error in /api/image/generate function:', error);
-    return new Response(JSON.stringify({ error: error.message || 'Failed to generate image' }), {
+    return new Response(JSON.stringify({ error: error.message || 'Failed to process image generation.' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });

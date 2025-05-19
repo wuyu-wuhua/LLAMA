@@ -1421,4 +1421,30 @@ body.auth-body .main-content.auth-page {
 
 .chat-item > i {
     margin-right: 8px;
+}
+
+.image-size-selector {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-start;
+    align-items: center;
+    margin: 10px 0 0 0;
+    padding-left: 10px;
+}
+
+.size-btn {
+    background: #f8f9fa;
+    border: 1px solid var(--border-color);
+    color: var(--primary-color);
+    border-radius: 18px;
+    padding: 5px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, border 0.2s;
+}
+
+.size-btn.active, .size-btn:hover {
+    background: var(--primary-color);
+    color: #fff;
+    border-color: var(--primary-color);
 } 

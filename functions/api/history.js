@@ -2,58 +2,39 @@
  * Handles GET requests to fetch all conversation history summaries.
  */
 export async function onRequestGet(context) {
-  // const { env } = context; // For accessing KV or D1 if needed
-  try {
-    // TODO: Implement logic to fetch conversation summaries from your storage (KV, D1, etc.)
-    // Example structure the frontend expects for each item:
-    // {
-    //   id: "unique_conversation_id",
-    //   title: "Chat about AI", // Or a generated title based on messages
-    //   lastUpdated: "timestamp_or_iso_string",
-    //   scenario: "general", // The scenario of the conversation
-    //   icon: "fas fa-comments" // Optional icon class
-    // }
-
-    // Placeholder response
-    const placeholderHistory = [
-      { id: "sample1", title: "Sample Chat 1 (from Function)", lastUpdated: new Date().toISOString(), scenario: "general", icon: "fas fa-flask" },
-      { id: "sample2", title: "Another Sample (Function)", lastUpdated: new Date(Date.now() - 86400000).toISOString(), scenario: "code", icon: "fas fa-code" },
-    ];
-
-    return new Response(JSON.stringify(placeholderHistory), {
-      headers: { 'Content-Type': 'application/json' },
-    });
-
-  } catch (error) {
-    console.error('Error fetching chat history:', error);
-    return new Response(JSON.stringify({ error: error.message || 'Failed to fetch history' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
+  const { env } = context;
+  const kv = env.CHAT_HISTORY_KV;
+  // 获取所有key（会话ID）
+  const list = await kv.list();
+  const items = [];
+  for (const key of list.keys) {
+    const historyStr = await kv.get(key.name);
+    if (!historyStr) continue;
+    const history = JSON.parse(historyStr);
+    // 取最后一条消息时间和内容
+    const lastMsg = history[history.length - 1];
+    items.push({
+      id: key.name,
+      title: (history[0]?.content || '新对话').slice(0, 20),
+      lastUpdated: key.metadata?.updated || new Date().toISOString(),
+      scenario: 'general', // 可根据实际需求扩展
+      icon: 'fas fa-comments',
     });
   }
+  // 按更新时间倒序
+  items.sort((a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated));
+  return new Response(JSON.stringify(items), { headers: { 'Content-Type': 'application/json' } });
 }
 
 /**
  * Handles DELETE requests to clear all conversation history.
  */
 export async function onRequestDelete(context) {
-  // const { env } = context; // For accessing KV or D1 if needed
-  try {
-    // TODO: Implement logic to delete ALL conversation history from your storage (KV, D1, etc.)
-    // This is a destructive operation, ensure you have confirmations if needed or backup strategies.
-
-    console.log('Clearing all chat history (placeholder)');
-
-    return new Response(JSON.stringify({ message: 'All history cleared successfully (placeholder)' }), {
-      status: 200, // or 204 No Content if you prefer
-      headers: { 'Content-Type': 'application/json' },
-    });
-
-  } catch (error) {
-    console.error('Error clearing all chat history:', error);
-    return new Response(JSON.stringify({ error: error.message || 'Failed to clear history' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+  const { env } = context;
+  const kv = env.CHAT_HISTORY_KV;
+  const list = await kv.list();
+  for (const key of list.keys) {
+    await kv.delete(key.name);
   }
+  return new Response(JSON.stringify({ success: true }), { headers: { 'Content-Type': 'application/json' } });
 } 
