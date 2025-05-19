@@ -25,18 +25,17 @@ export async function onRequestPost(context) {
       convId = `conv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     }
 
-    // 2. 构建消息数组
-    const messages = [
-      { role: "system", content: "You are a helpful assistant." },
-      ...history,
-      { role: "user", content: message }
-    ];
-
+    // 2. 构建消息数组（修正为 sender/text 格式）
+    const userMsg = { sender: 'user', text: message };
     // 3. 调用 DashScope OpenAI 兼容接口
     const dashscopeUrl = "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions";
     const payload = {
       model: "qwen-plus",
-      messages,
+      messages: [
+        { role: "system", content: "You are a helpful assistant." },
+        ...history.map(m => ({ role: m.sender === 'user' ? 'user' : 'assistant', content: m.text })),
+        { role: "user", content: message }
+      ],
     };
     const resp = await fetch(dashscopeUrl, {
       method: "POST",
@@ -52,9 +51,10 @@ export async function onRequestPost(context) {
     }
     const data = await resp.json();
     const aiMsg = data.choices?.[0]?.message?.content || "AI无回复";
+    const aiMsgObj = { sender: 'ai', text: aiMsg };
 
-    // 4. 保存历史
-    const newHistory = [...history, { role: "user", content: message }, { role: "assistant", content: aiMsg }];
+    // 4. 保存历史（修正为 sender/text 格式）
+    const newHistory = [...history, userMsg, aiMsgObj];
     await kv.put(convId, JSON.stringify(newHistory));
 
     // 5. 返回响应
