@@ -982,7 +982,13 @@ function sendMessage(messageText, file) {
     let url = '';
     let body = {};
     let isImage = false;
+
     if (currentScenario === 'aipainting') {
+        if (!messageText || messageText.trim() === "") {
+            removeThinkingMessage();
+            addMessage(getTranslatedString('promptRequiredForPainting', currentLang) || '请输入绘画提示词。', 'ai');
+            return;
+        }
         url = BASE_API_URL + '/api/image/generate';
         body = {
             prompt: messageText,
@@ -1006,21 +1012,39 @@ function sendMessage(messageText, file) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
     })
-    .then(res => res.json())
+    .then(res => {
+        if (!res.ok && res.status === 500) {
+            console.error('Server Error 500:', res);
+            return res.json().then(errData => {
+                throw new Error(errData.error || '服务器内部错误 (500)');
+            }).catch(() => {
+                throw new Error('服务器内部错误 (500)，且响应无法解析。');
+            });
+        }
+        if (!res.ok) {
+             return res.json().then(errData => {
+                throw new Error(errData.error || `请求失败，状态码: ${res.status}`);
+            }).catch(() => {
+                throw new Error(`请求失败，状态码: ${res.status}，且响应无法解析。`);
+            });
+        }
+        return res.json();
+    })
     .then(data => {
         removeThinkingMessage();
         if (data.error) {
             addMessage('❌ ' + (data.error || 'AI服务异常'), 'ai');
             return;
         }
+
         if (isImage && data.reply) {
-            // AI绘画
             addMessage(data.reply, 'ai', false, 'image');
         } else if (data.reply) {
             addMessage(data.reply, 'ai');
         } else {
-            addMessage('AI无回复', 'ai');
+            addMessage(getTranslatedString('aiEmptyReply', currentLang) || 'AI未返回有效回复。', 'ai');
         }
+
         if (data.conversationId) {
             currentConversationId = data.conversationId;
         }
@@ -1028,7 +1052,8 @@ function sendMessage(messageText, file) {
     })
     .catch(err => {
         removeThinkingMessage();
-        addMessage('❌ 网络错误或服务器异常', 'ai');
+        addMessage('❌ ' + (err.message || '网络错误或服务器异常'), 'ai');
+        console.error('API Error:', err);
     });
 } 
  
