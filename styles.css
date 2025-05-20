@@ -43,8 +43,9 @@ a {
 /* 容器布局 */
 .container {
     display: flex;
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100vh;
+    width: 100%;
+    overflow: visible;
 }
 
 /* 侧边栏样式 */
@@ -54,8 +55,12 @@ a {
     border-right: 1px solid rgba(255, 255, 255, 0.15);
     display: flex;
     flex-direction: column;
-    height: 100%;
-    overflow: hidden;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 100;
+    overflow-y: auto;
     color: #ffffff;
 }
 
@@ -192,8 +197,10 @@ a {
 /* 主内容区样式 */
 .main-content {
     flex: 1;
+    margin-left: 280px; /* 与侧边栏宽度相同 */
     overflow-y: auto;
     padding: 20px;
+    width: calc(100% - 280px);
 }
 
 /* 聊天界面样式 */
@@ -546,7 +553,7 @@ a {
     padding-left: 15px; /* Keep left padding */
     padding-right: 5px; /* Reduce right padding to give more space */
     border: 1px solid var(--border-color);
-    border-radius: 20px; 
+    border-radius: 20px;
     background-color: #fff;
     font-size: 16px;
     resize: none; 
@@ -893,22 +900,32 @@ a {
 /* Site Footer */
 .site-footer {
     padding: 20px;
-    background-color: #1a1a2e; /* Dark blueish background from image */
-    color: #e0e0e0; /* Light grey/off-white text */
-    border-top: 1px solid #3a3a5e; /* Match separator line */
+    background-color: #1a1a2e;
+    color: #e0e0e0;
+    border-top: 1px solid #3a3a5e;
+    width: calc(100% - 280px); /* Adjusted for main content area */
+    margin-left: 280px;      /* Adjusted for main content area */
+    flex-shrink: 0;
+    text-align: center;
+    position: relative;
+}
+
+/* Specific footer style for privacy policy page */
+body.page-privacy-policy .site-footer {
     width: 100%;
-    flex-shrink: 0; 
+    margin-left: 0;
 }
 
 .footer-top-line {
     display: flex;
-    justify-content: center;
+    justify-content: center; /* 居中对齐 */
     align-items: center;
     gap: 25px;
     margin-bottom: 10px;
     font-size: 14px;
     border-bottom: 1px solid #3a3a5e;
     padding-bottom: 10px;
+    flex-wrap: wrap; /* 在小屏幕上允许换行 */
 }
 
 .footer-top-line a {
@@ -917,6 +934,24 @@ a {
 }
 
 .footer-top-line a:hover {
+    text-decoration: underline;
+}
+
+.footer-bottom-line {
+    display: flex;
+    justify-content: center; /* 居中对齐 */
+    align-items: center;
+    gap: 25px;
+    font-size: 14px;
+    flex-wrap: wrap; /* 在小屏幕上允许换行 */
+}
+
+.footer-bottom-line a {
+    color: #e0e0e0;
+    text-decoration: none;
+}
+
+.footer-bottom-line a:hover {
     text-decoration: underline;
 }
 
@@ -1447,4 +1482,180 @@ body.auth-body .main-content.auth-page {
     background: var(--primary-color);
     color: #fff;
     border-color: var(--primary-color);
-} 
+}
+
+/* 隐私政策页面样式 */
+.privacy-policy-content {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 30px 40px;
+    background-color: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: visible; /* 改为visible，允许内容溢出 */
+}
+
+.privacy-policy-content h1 {
+    color: var(--primary-color);
+    font-size: 32px;
+    margin-bottom: 30px;
+    text-align: center;
+    position: relative;
+    padding-bottom: 15px;
+}
+
+.privacy-policy-content h1:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    border-radius: 3px;
+}
+
+.privacy-policy-content section {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.privacy-policy-content section:last-child {
+    border-bottom: none;
+}
+
+.privacy-policy-content h2 {
+    color: var(--primary-color);
+    font-size: 22px;
+    margin-bottom: 15px;
+    position: relative;
+    padding-left: 15px;
+}
+
+.privacy-policy-content h2:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 5px;
+    height: 20px;
+    background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color));
+    border-radius: 3px;
+}
+
+.privacy-policy-content p {
+    margin-bottom: 15px;
+    line-height: 1.7;
+    color: var(--text-color);
+}
+
+.privacy-policy-content ul {
+    margin-left: 20px;
+    margin-bottom: 15px;
+}
+
+.privacy-policy-content li {
+    margin-bottom: 10px;
+    position: relative;
+    padding-left: 20px;
+    line-height: 1.6;
+}
+
+.privacy-policy-content li:before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: var(--primary-color);
+    font-size: 18px;
+}
+
+.back-to-home {
+    text-align: center;
+    margin-top: 40px;
+}
+
+.back-to-home a {
+    display: inline-block;
+    padding: 10px 25px;
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border-radius: 30px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 102, 255, 0.2);
+}
+
+.back-to-home a:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 7px 20px rgba(0, 102, 255, 0.3);
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .privacy-policy-content {
+        padding: 20px;
+        margin: 20px;
+    }
+    
+    .privacy-policy-content h1 {
+        font-size: 26px;
+    }
+    
+    .privacy-policy-content h2 {
+        font-size: 20px;
+    }
+}
+/* 针对隐私政策页面的特殊容器样式 */
+body .container {
+    height: auto; /* 覆盖默认的100vh高度 */
+    overflow: visible;
+}
+
+/* 修复移动端响应式布局 */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+    
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+    }
+    
+    .chat-history {
+        display: none;
+    }
+}
+
+/* 针对auth-body的特殊处理 */
+body.auth-body > .container {
+    flex-direction: column;
+}
+
+body.auth-body .sidebar {
+    display: none;
+}
+
+body.auth-body .main-content {
+    margin-left: 0;
+    width: 100%;
+}
+
+/* Positioning for lang-toggle-btn specifically on privacy page h1 */
+.privacy-policy-content h1 #lang-toggle-btn {
+    position: absolute;
+    top: 20px; /* Adjust as needed for alignment */
+    right: 20px; /* Adjust as needed for alignment */
+}

@@ -114,7 +114,14 @@ function initImageUpload() {
         return;
     }
 
-    imageUploadLabel.addEventListener('click', () => imageUploadInput.click());
+    // 移除点击标签触发文件输入的事件，改为直接点击
+    // 移除这一行: imageUploadLabel.addEventListener('click', () => imageUploadInput.click());
+    
+    // 确保标签点击直接打开文件选择器
+    imageUploadLabel.onclick = function(e) {
+        e.preventDefault(); // 防止默认行为
+        imageUploadInput.click(); // 直接触发文件输入点击
+    };
 
     imageUploadInput.addEventListener('change', function() {
         const file = this.files && this.files[0];
@@ -141,7 +148,8 @@ function initImageUpload() {
         }
     });
 
-    removeImageBtn.addEventListener('click', function() {
+    removeImageBtn.addEventListener('click', function(e) {
+        e.stopPropagation(); // 阻止事件冒泡
         imageUploadInput.value = '';
         imagePreview.src = '#';
         imagePreviewContainer.style.display = 'none';
@@ -299,6 +307,20 @@ document.addEventListener('DOMContentLoaded', function() {
     initPageParticles(); // Initialize page particles effect
     initCustomPointer(); // Initialize custom mouse pointer
     initImageSizeSelector();
+
+    // 新增新对话按钮逻辑
+    const newChatBtn = document.querySelector('.new-chat-btn');
+    if (newChatBtn) {
+        newChatBtn.addEventListener('click', function() {
+            currentConversationId = null;
+            resetChatViewToWelcome();
+            // 取消所有历史高亮
+            document.querySelectorAll('.chat-item').forEach(item => item.classList.remove('active'));
+            // 聚焦输入框
+            const chatInput = document.getElementById('chat-input');
+            if (chatInput) chatInput.focus();
+        });
+    }
 });
 
 // Called by toggleLanguage in translation.js after language is set

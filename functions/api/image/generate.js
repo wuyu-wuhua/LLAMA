@@ -1,15 +1,35 @@
 export async function onRequestPost(context) {
   try {
     const { request, env } = context;
-    const apiKey = env.DASHSCOPE_API_KEY;
-    if (!apiKey) {
-      return new Response(JSON.stringify({ error: "API key is not configured." }), { status: 500, headers: { 'Content-Type': 'application/json' } });
-    }
     const body = await request.json();
-    const { prompt, negative_prompt = '', size = '1024*1024' } = body;
+    const { prompt, size = '1024*1024', conversationId } = body;
+    const apiKey = env.DASHSCOPE_API_KEY;
+    const kv = env.CHAT_HISTORY_KV;
+
+    // 验证输入
     if (!prompt) {
       return new Response(JSON.stringify({ error: "No prompt provided." }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
+    if (!apiKey) {
+      return new Response(JSON.stringify({ error: "API key is not configured." }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+    }
+
+    // 1. 读取历史消息
+    let history = [];
+    let convId = conversationId;
+    if (convId) {
+      const historyStr = await kv.get(convId);
+      if (historyStr) {
+        history = JSON.parse(historyStr);
+      }
+    } else {
+      convId = `conv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    }
+
+    // 添加用户消息到历史
+    const userMsg = { sender: 'user', text: prompt };
+    history.push(userMsg);
+
     // 1. 提交图片生成任务
     const submitUrl = 'https://dashscope.aliyuncs.com/api/v1/services/aigc/text2image/image-synthesis';
     const submitPayload = {
@@ -64,7 +84,17 @@ export async function onRequestPost(context) {
     if (!imageUrl) {
       return new Response(JSON.stringify({ error: 'Image generation timed out.' }), { status: 504, headers: { 'Content-Type': 'application/json' } });
     }
-    return new Response(JSON.stringify({ reply: imageUrl, type: 'image', taskId }), {
+    // 在成功生成图像后，添加AI回复到历史
+    if (imageUrl) {
+      const aiMsgObj = { sender: 'ai', text: imageUrl, type: 'image' };
+      history.push(aiMsgObj);
+      
+      // 保存更新后的历史
+      await kv.put(convId, JSON.stringify(history));
+    }
+
+    // 返回响应
+    return new Response(JSON.stringify({ reply: imageUrl, conversationId: convId, type: 'image' }), {
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
