@@ -2,7 +2,7 @@ export async function onRequestPost(context) {
   try {
     const { request, env } = context;
     const body = await request.json();
-    const { prompt, size = '1024*1024', conversationId } = body;
+    const { prompt, size = '1024*1024', conversationId, negative_prompt = '' } = body;
     const apiKey = env.DASHSCOPE_API_KEY;
     const kv = env.CHAT_HISTORY_KV;
 
