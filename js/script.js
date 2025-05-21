@@ -15,48 +15,55 @@ const IMAGE_KEYWORDS = ['画', '绘画', '生成', '创作', '图片', 'image', 
 // Global store for typewriter timeout IDs to clear them
 const typewriterTimeouts = new Map(); // Map<Element, number>
 
+let isNavigatingToLogin = false; // 新增：防止重复导航的标志
+
 // Placeholder for sendMessageHandler - User needs to define this properly
 function sendMessageHandler() {
-    console.warn("sendMessageHandler is called, but needs full implementation for sending messages.");
+    const loginCheckResult = redirectToLoginIfNeeded();
+    if (loginCheckResult.loginRequired) { 
+        // 如果需要登录（意味着弹出了对话框），则停止发送消息的逻辑。
+        // 如果用户点击了"取消"，isNavigatingToLogin 会是 false，下次操作会再次检查。
+        // 如果用户点击了"确定"，isNavigatingToLogin 会是 true，页面会跳转。
+        return; 
+    }
+
+    // console.warn("sendMessageHandler is called, but needs full implementation for sending messages."); // 可以移除这行了
     const chatInput = document.getElementById('chat-input');
     const imageUploadInput = document.getElementById('image-upload-input');
     let messageText = chatInput ? chatInput.value.trim() : "";
     let file = imageUploadInput && imageUploadInput.files[0] ? imageUploadInput.files[0] : null;
 
     if (!messageText && !file) {
-        // console.log("No message text or file to send.");
         return; 
     }
     
-    // Call the actual sendMessage function
     if (typeof sendMessage === 'function') {
-        sendMessage(messageText, file); // sendMessage is defined at the end of the script
+        sendMessage(messageText, file);
     } else {
         console.error("sendMessage function is not defined at the point of call by sendMessageHandler.");
     }
     
     if (chatInput) {
-        chatInput.value = ""; // Clear text input
-        chatInput.style.height = 'auto'; // Reset height
-        chatInput.style.height = (chatInput.scrollHeight) + 'px'; // Adjust to new content (empty)
+        chatInput.value = ""; 
+        chatInput.style.height = 'auto';
+        chatInput.style.height = (chatInput.scrollHeight) + 'px';
     }
 
-    if (imageUploadInput && imageUploadInput.files[0]) { // If a file was part of the message
+    if (imageUploadInput && imageUploadInput.files[0]) {
         const removeImageBtn = document.getElementById('remove-image-btn');
         const imagePreviewContainer = document.getElementById('image-preview-container');
         const imagePreview = document.getElementById('image-preview');
 
-        imageUploadInput.value = ''; // Clear the file input
+        imageUploadInput.value = '';
         if(imagePreview) imagePreview.src = '#';
         if(imagePreviewContainer) imagePreviewContainer.style.display = 'none';
         if(removeImageBtn) removeImageBtn.style.display = 'none';
     }
     
-    // Focus input and manage image size selector visibility
     if (chatInput) chatInput.focus();
     
-    const currentChatInputVal = chatInput ? chatInput.value.trim() : ""; // Should be empty now
-    const currentImageFile = imageUploadInput && imageUploadInput.files[0] ? imageUploadInput.files[0] : null; // Should be null now
+    const currentChatInputVal = chatInput ? chatInput.value.trim() : "";
+    const currentImageFile = imageUploadInput && imageUploadInput.files[0] ? imageUploadInput.files[0] : null;
 
     if (!currentImageFile && !IMAGE_KEYWORDS.some(k => currentChatInputVal.includes(k))) {
         if (typeof hideImageSizeSelector === 'function') {
@@ -70,33 +77,43 @@ function initChat() {
     const chatInput = document.getElementById('chat-input');
 
     if (!sendBtn || !chatInput) {
-        // console.warn("Essential chat elements (send button or input) not found, initChat skipped.");
         return;
     }
 
-    sendBtn.addEventListener('click', sendMessageHandler);
+    sendBtn.addEventListener('click', function() {
+        sendMessageHandler();
+    });
+
     chatInput.addEventListener('keypress', function(e) {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             sendMessageHandler();
         }
     });
-    chatInput.addEventListener('input', function() { // Auto-resize
+    chatInput.addEventListener('input', function() { 
         this.style.height = 'auto';
         this.style.height = (this.scrollHeight) + 'px';
     });
 
-    // Logic for showing/hiding image size selector based on chat input
+    chatInput.addEventListener('focus', function() { 
+        if (isNavigatingToLogin) return; // 如果正在导航，则不执行任何操作
+
+        const loginCheckResult = redirectToLoginIfNeeded();
+        if (loginCheckResult.loginRequired && !loginCheckResult.navigated) {
+            // 如果需要登录，弹出了对话框，且用户点击了"取消" (navigated is false)
+            this.blur(); // 使输入框失去焦点，防止循环
+        }
+    });
+
     chatInput.addEventListener('input', function() {
         const val = this.value;
         if (IMAGE_KEYWORDS.some(k => val.includes(k))) {
             if (typeof showImageSizeSelector === 'function') showImageSizeSelector();
         } else {
             const imageUploadInputElement = document.getElementById('image-upload-input');
-            // Hide only if no image is selected
             if (imageUploadInputElement && !imageUploadInputElement.files[0]) {
                 if (typeof hideImageSizeSelector === 'function') hideImageSizeSelector();
-            } else if (!imageUploadInputElement) { // If no image upload input at all
+            } else if (!imageUploadInputElement) {
                  if (typeof hideImageSizeSelector === 'function') hideImageSizeSelector();
             }
         }
@@ -113,17 +130,16 @@ function initImageUpload() {
     if (!imageUploadInput || !imageUploadLabel || !imagePreviewContainer || !imagePreview || !removeImageBtn) {
         return;
     }
-
-    // 移除点击标签触发文件输入的事件，改为直接点击
-    // 移除这一行: imageUploadLabel.addEventListener('click', () => imageUploadInput.click());
     
-    // 确保标签点击直接打开文件选择器
     imageUploadLabel.onclick = function(e) {
-        e.preventDefault(); // 防止默认行为
-        imageUploadInput.click(); // 直接触发文件输入点击
+        e.preventDefault(); 
+        const loginCheckResult = redirectToLoginIfNeeded();
+        if (loginCheckResult.loginRequired) return;
+        imageUploadInput.click(); 
     };
 
     imageUploadInput.addEventListener('change', function() {
+        // if (redirectToLoginIfNeeded()) return; // 用户选择文件后不应立即重定向，而是允许预览
         const file = this.files && this.files[0];
         if (file) {
             const reader = new FileReader();
@@ -138,7 +154,6 @@ function initImageUpload() {
             imagePreviewContainer.style.display = 'none';
             removeImageBtn.style.display = 'none';
         }
-        // 只要有文件就显示尺寸选择器
         if (file && typeof showImageSizeSelector === 'function') showImageSizeSelector();
         if (!file) {
             const chatInputVal = document.getElementById('chat-input') ? document.getElementById('chat-input').value : "";
@@ -149,7 +164,7 @@ function initImageUpload() {
     });
 
     removeImageBtn.addEventListener('click', function(e) {
-        e.stopPropagation(); // 阻止事件冒泡
+        e.stopPropagation(); 
         imageUploadInput.value = '';
         imagePreview.src = '#';
         imagePreviewContainer.style.display = 'none';
@@ -268,57 +283,88 @@ function initializeAllTypewriters() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize language settings first
-    if (typeof setLanguage === 'function') {
-        setLanguage(currentLang || 'zh'); 
+    // 页面加载时，如果用户未登录，重置导航标志
+    if (!isUserLoggedIn()) {
+        isNavigatingToLogin = false;
     }
 
-    // Initialize other components
-    loadChatHistory(); 
+    const pathname = window.location.pathname;
 
-    // Only initialize chat-specific functions if chat elements are present
-    if (document.getElementById('chat-input')) {
-        initChat(); 
-        initScenarioButtons(); // Scenario buttons are also part of the main chat interface
-        initImageUpload(); // Image upload is also part of the main chat interface
+    // 公共初始化 - 这些函数将在所有包含此脚本的页面上运行
+    if (typeof initializeAllTypewriters === 'function') {
+        initializeAllTypewriters(); // Typewriter可能只在特定页面元素上有效
     }
+    if (typeof initPageParticles === 'function') {
+        // 确保目标元素存在于当前页面
+        if (document.getElementById('page-particles-js')) {
+            initPageParticles();
+        }
+    }
+    if (typeof initCustomPointer === 'function') {
+        initCustomPointer();
+    }
+    if (typeof setupLanguageToggle === 'function') { 
+        setupLanguageToggle();
+    }
+    if (typeof applyTranslations === 'function') {
+        applyTranslations(currentLang || 'zh'); 
+    }
+
+    // 页面特定初始化
+    if (pathname.includes('index.html') || pathname === '/' || pathname.endsWith('/Llama2-Chinese-main/')) { // 假设这些是首页的路径
+        if (typeof updateLoginStateUI === 'function') {
+            updateLoginStateUI();
+        }
+        if (typeof initChat === 'function') {
+            initChat(); 
+        }
+        if (typeof initImageUpload === 'function') {
+            initImageUpload();
+        }
+        if (typeof initScenarioButtons === 'function') {
+            initScenarioButtons();
+        }
+        if (typeof loadChatHistory === 'function') {
+            loadChatHistory(); // 加载历史对话
+        }
+        if (typeof initImageSizeSelector === 'function') {
+            initImageSizeSelector();
+        }
+    } else if (pathname.includes('login.html') || pathname.includes('register.html')) {
+        if (typeof handleGoogleCallback === 'function') {
+            handleGoogleCallback();
+        }
+        const googleLoginBtn = document.querySelector('.google-login-btn');
+        if (googleLoginBtn && typeof handleGoogleLogin === 'function') {
+            googleLoginBtn.addEventListener('click', handleGoogleLogin);
+        }
+    } else if (pathname.includes('reviews.html')) {
+        if (typeof initDynamicRatings === 'function') {
+            initDynamicRatings();
+        }
+        if (typeof initVerticalMarqueeReviews === 'function') {
+             initVerticalMarqueeReviews();
+        }
+        if (typeof initMarqueeHoverPause === 'function') {
+            initMarqueeHoverPause();
+        }
+    } else if (pathname.includes('privacy-policy.html')) {
+        // 隐私政策页面特有的JS初始化（如果有的话）
+    }
+
+    // ... 其他可能的全页通用初始化 ...
     
-    initDynamicRatings(); // For reviews page (and potentially other pages if ratings are shown)
-
-    // Reviews page specific initializations
-    if (document.querySelector('.reviews-container')) {
-        initVerticalMarqueeReviews();
-        initMarqueeHoverPause();
-    }
-
-    // Add language toggle listener (should be global if button is on multiple pages)
-    const langToggleBtn = document.getElementById('lang-toggle-btn');
-    if (langToggleBtn && typeof toggleLanguage === 'function') {
-        langToggleBtn.addEventListener('click', toggleLanguage);
-    }
-
-    // Language initialization
-    const savedLang = localStorage.getItem('language') || 'zh';
-    setLanguage(savedLang); // Apply translations first
-    initializeAllTypewriters(); // Then initialize typewriters with translated text
-    
-    // Global effects - should be initialized after specific page initializations 
-    // to avoid being blocked by errors, but also ensure they run on all pages.
-    initPageParticles(); // Initialize page particles effect
-    initCustomPointer(); // Initialize custom mouse pointer
-    initImageSizeSelector();
-
-    // 新增新对话按钮逻辑
+    // 示例：如果侧边栏的新对话按钮存在于所有页面 (不太可能，通常在 index.html)
     const newChatBtn = document.querySelector('.new-chat-btn');
     if (newChatBtn) {
         newChatBtn.addEventListener('click', function() {
-            currentConversationId = null;
-            resetChatViewToWelcome();
-            // 取消所有历史高亮
-            document.querySelectorAll('.chat-item').forEach(item => item.classList.remove('active'));
-            // 聚焦输入框
-            const chatInput = document.getElementById('chat-input');
-            if (chatInput) chatInput.focus();
+            const loginCheckResult = redirectToLoginIfNeeded();
+            if (loginCheckResult.loginRequired) return; // 如果需要登录（无论是否导航），则停止操作
+            
+            currentConversationId = null; 
+            document.getElementById('chat-messages').innerHTML = ''; 
+            resetChatViewToWelcome(); 
+            if (typeof loadChatHistory === 'function') loadChatHistory(); 
         });
     }
 });
@@ -1055,5 +1101,268 @@ function sendMessage(messageText, file) {
         addMessage('❌ ' + (err.message || '网络错误或服务器异常'), 'ai');
         console.error('API Error:', err);
     });
-} 
+}
+
+// ========== GOOGLE AUTHENTICATION START ==========
+
+// 辅助函数：从URL中提取主域名
+function extractRootDomain(url) {
+    let domain;
+    try {
+        // 先尝试通过URL构造函数解析
+        domain = new URL(url).hostname;
+    } catch (e) {
+        // 如果失败（比如url不是一个完整的http/https地址，可能是相对路径等），则直接返回原始url
+        // 或者可以尝试更复杂的正则表达式，但这里简化处理
+        // 对于 window.location.origin 这样的输入，hostname属性可以直接使用
+        return url; // 或者根据具体情况返回更合适的默认值
+    }
+
+    const parts = domain.split('.');
+    if (parts.length > 2) {
+        // 检查是否是常见的多部分顶级域名，如 .co.uk, .com.cn
+        // 这是一个简化版本，可能需要根据实际支持的域名进行调整
+        if ((parts[parts.length - 2] === 'co' || parts[parts.length - 2] === 'com') && parts.length > 3) {
+            return parts.slice(-3).join('.');
+        }
+        return parts.slice(-2).join('.');
+    }
+    return domain;
+}
+
+// 处理Google登录点击
+function handleGoogleLogin() {
+    // 使用当前页面的主域名作为回调基础
+    const currentOrigin = window.location.origin;
+    // 重要：确保您的PHP脚本 (google_login.php) 期望接收的是主域名或者您在Google OAuth配置中允许的完整回调URI
+    // 此处假设您的PHP脚本会处理回调并附加参数到您提供的 redirect_uri
+    // 为了安全和准确，回调URI应该与您在Google Cloud Console中注册的完全匹配。
+    // 通常，回调URI是登录发起页面的完整路径，例如 login.html 或 register.html
+    const callbackPage = window.location.pathname.includes('login.html') ? 'login.html' : 'register.html';
+    const callback = encodeURIComponent(`${currentOrigin}/${callbackPage}`); // 确保这是您在Google Console中授权的URI
+    
+    // 从您的React代码中，url参数似乎是硬编码的 "111.com"，这可能需要根据您的PHP脚本逻辑调整
+    // 如果 "url=" 参数是您的PHP脚本需要的目标主域名，您应该动态获取它或确认该硬编码值
+    // const targetDomainForPHP = extractRootDomain(window.location.origin); // 或者一个配置好的值
+    const targetDomainForPHP = "erlangjiuye.com"; // 保持与您代码一致，但请确认其用途和正确性
+
+    window.location.href = `https://aa.jstang.cn/google_login.php?url=erlangjiuye.com;&redirect_uri=${callback}`;
+}
+
+// 检查用户是否已登录
+function isUserLoggedIn() {
+    return !!localStorage.getItem('token');
+}
+
+// 获取存储的用户信息
+function getUserInfo() {
+    const name = localStorage.getItem('name');
+    const email = localStorage.getItem('email');
+    const picture = localStorage.getItem('picture');
+    if (name && email && picture) {
+        return { name, email, picture };
+    }
+    return null;
+}
+
+// 处理Google登录回调 (在登录/注册页面加载时调用)
+function handleGoogleCallback() {
+    const url = window.location.href;
+    if (url.includes('google_id=')) {
+        const params = new URLSearchParams(url.split('?')[1]);
+        
+        const googleId = params.get('google_id');
+        const name = params.get('name');
+        const email = params.get('email');
+        const picture = params.get('picture');
+        
+        if (googleId) localStorage.setItem('google_id', googleId);
+        if (name) localStorage.setItem('name', name);
+        if (email) localStorage.setItem('email', email);
+        if (picture) localStorage.setItem('picture', picture);
+        
+        // 生成简单的 token
+        const token = btoa(JSON.stringify({ googleId, name, email, picture })); // 使用 btoa 进行简单编码
+        localStorage.setItem('token', token);
+        
+        // 清理 URL 参数
+        const cleanUrl = window.location.origin + window.location.pathname;
+        window.history.replaceState({}, document.title, cleanUrl);
+        
+        // 重定向到首页
+        window.location.href = 'index.html'; 
+    }
+}
+
+// 更新侧边栏登录状态UI (在index.html调用)
+function updateLoginStateUI() {
+    const loginBtnContainer = document.querySelector('.nav-links a.login-btn'); // 登录按钮的容器<a>
+    const navLinks = document.querySelector('.nav-links');
+
+    if (!navLinks) return; // 如果侧边栏不存在则不执行
+
+    if (isUserLoggedIn()) {
+        const userInfo = getUserInfo();
+        if (userInfo && loginBtnContainer) {
+            // 移除旧的登录按钮
+            loginBtnContainer.style.display = 'none';
+
+            // 检查是否已存在用户信息元素，避免重复添加
+            let userProfileElement = document.getElementById('user-profile-sidebar');
+            if (!userProfileElement) {
+                userProfileElement = document.createElement('div');
+                userProfileElement.id = 'user-profile-sidebar';
+                userProfileElement.classList.add('user-profile-sidebar-container');
+
+                let avatarHTML = '';
+                // More robust check for picture URL and add Tailwind classes
+                if (userInfo.picture && (userInfo.picture.startsWith('http://') || userInfo.picture.startsWith('https://'))) {
+                    avatarHTML = `<img src="${userInfo.picture}" alt="${userInfo.name || 'User'}" class="user-avatar w-8 h-8 rounded-full">`;
+                } else if (userInfo.name && userInfo.name.length > 0) { // Check name exists and has length
+                    const firstLetter = userInfo.name.charAt(0).toUpperCase();
+                    let bgColor = '#cccccc'; // Default color for background
+                    try {
+                        // Dynamic background color based on name hash
+                        const nameHash = userInfo.name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+                        const colors = ['#FFB6C1', '#ADD8E6', '#90EE90', '#FFDAB9', '#E6E6FA', '#F0E68C', '#B0E0E6'];
+                        bgColor = colors[nameHash % colors.length];
+                    } catch(e){ /* Ignore color generation error, use default */ }
+                    // Apply Tailwind-like classes for styling initials avatar
+                    avatarHTML = `<div class="w-8 h-8 rounded-full flex items-center justify-center text-white" style="background-color: ${bgColor};">${firstLetter}</div>`;
+                } else {
+                    // Fallback avatar with 'U' and Tailwind-like classes
+                    avatarHTML = `<div class="w-8 h-8 rounded-full flex items-center justify-center text-white" style="background-color: #cccccc;">U</div>`;
+                }
+
+                userProfileElement.innerHTML = `
+                    ${avatarHTML}
+                    <span class="user-name">${userInfo.name || 'User'}</span>
+                    <div class="user-dropdown" style="display:none;">
+                        <a href="profile.html" id="view-profile-btn"><span data-translate-key="profileViewProfile">查看信息</span></a>
+                        <a href="#" id="logout-btn"><span data-translate-key="profileLogout">退出登录</span></a>
+                    </div>
+                `;
+                // 将新的用户信息元素插入到登录按钮原本的位置或其父容器的开头/末尾
+                // 为了保持顺序，我们尝试插入到 chat 链接之前
+                const chatLink = navLinks.querySelector('a[href="index.html"]');
+                if (chatLink) {
+                    navLinks.insertBefore(userProfileElement, chatLink);
+                } else {
+                    navLinks.appendChild(userProfileElement); // 备用方案
+                }
+
+                // 事件监听器
+                const avatarContainer = userProfileElement; // 直接用父容器触发
+                const dropdown = userProfileElement.querySelector('.user-dropdown');
+                
+                avatarContainer.addEventListener('click', (e) => {
+                    e.stopPropagation(); // 防止事件冒泡到document关闭dropdown
+                    if(dropdown) dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+                });
+
+                document.getElementById('logout-btn').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    logoutUser();
+                });
+                
+                // 点击页面其他地方关闭下拉菜单
+                document.addEventListener('click', (e) => {
+                    if (userProfileElement && !userProfileElement.contains(e.target) && dropdown) {
+                        dropdown.style.display = 'none';
+                    }
+                });
+            } else {
+                // 更新已存在的用户信息
+                const currentAvatarElement = userProfileElement.querySelector('.user-avatar, .user-avatar-initial, .w-8.h-8.rounded-full'); // Include new classes in selector
+                let newAvatarHTML = '';
+
+                // Consistent robust check for picture URL and add Tailwind classes
+                if (userInfo.picture && (userInfo.picture.startsWith('http://') || userInfo.picture.startsWith('https://'))) {
+                    newAvatarHTML = `<img src="${userInfo.picture}" alt="${userInfo.name || 'User'}" class="user-avatar w-8 h-8 rounded-full">`;
+                } else if (userInfo.name && userInfo.name.length > 0) { // Check name exists and has length
+                    const firstLetter = userInfo.name.charAt(0).toUpperCase();
+                    let bgColor = '#cccccc'; // Default color for background
+                    try {
+                        // Dynamic background color based on name hash
+                        const nameHash = userInfo.name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+                        const colors = ['#FFB6C1', '#ADD8E6', '#90EE90', '#FFDAB9', '#E6E6FA', '#F0E68C', '#B0E0E6'];
+                        bgColor = colors[nameHash % colors.length];
+                    } catch(e){ /* Ignore color generation error, use default */ }
+                    // Apply Tailwind-like classes for styling initials avatar
+                    newAvatarHTML = `<div class="w-8 h-8 rounded-full flex items-center justify-center text-white" style="background-color: ${bgColor};">${firstLetter}</div>`;
+                } else {
+                    // Fallback avatar with 'U' and Tailwind-like classes
+                    newAvatarHTML = `<div class="w-8 h-8 rounded-full flex items-center justify-center text-white" style="background-color: #cccccc;">U</div>`;
+                }
+
+                if (currentAvatarElement) {
+                    currentAvatarElement.outerHTML = newAvatarHTML;
+                } else {
+                    // 如果没有找到旧的头像元素，则添加到容器的开头
+                    userProfileElement.insertAdjacentHTML('afterbegin', newAvatarHTML);
+                }
+                
+                const userNameElement = userProfileElement.querySelector('.user-name');
+                if (userNameElement) {
+                    userNameElement.textContent = userInfo.name || 'User';
+                }
+            }
+        }
+    } else {
+        // 用户未登录，确保显示登录按钮，移除用户信息
+        if (loginBtnContainer) loginBtnContainer.style.display = 'flex'; // 或 'block' 取决于原始样式
+        const userProfileElement = document.getElementById('user-profile-sidebar');
+        if (userProfileElement) {
+            userProfileElement.remove();
+        }
+    }
+}
+
+// 注销用户
+function logoutUser() {
+    localStorage.removeItem('google_id');
+    localStorage.removeItem('name');
+    localStorage.removeItem('email');
+    localStorage.removeItem('picture');
+    localStorage.removeItem('token');
+    updateLoginStateUI(); // 更新UI以显示登录按钮
+    // 可选: 重定向到首页或登录页
+    if (window.location.pathname !== '/index.html' && window.location.pathname !== '/') {
+       // window.location.href = 'index.html'; // 避免在首页重复刷新
+    }
+}
+
+// 检查是否需要登录，如果未登录则重定向或提示
+function redirectToLoginIfNeeded() {
+    if (isNavigatingToLogin) {
+        // 如果已经在尝试导航到登录页面，则直接返回，避免重复弹窗
+        return { loginRequired: true, navigated: true }; 
+    }
+
+    if (!isUserLoggedIn()) {
+        const confirmLogin = window.confirm(getTranslatedString('loginRequiredMessage', currentLang) || '您需要登录才能使用此功能。是否立即登录？');
+        if (confirmLogin) {
+            isNavigatingToLogin = true; // 设置标志，表示开始导航
+            window.location.href = 'login.html';
+            return { loginRequired: true, navigated: true }; // 用户选择导航
+        } else {
+            return { loginRequired: true, navigated: false }; // 用户取消
+        }
+    }
+    // 用户已登录，或者之前已设置 isNavigatingToLogin 但实际未登录（例如页面加载时重置）
+    // 如果用户已登录，确保标志是false
+    isNavigatingToLogin = false; 
+    return { loginRequired: false, navigated: false }; 
+}
+
+// ========== GOOGLE AUTHENTICATION END ==========
+
+// Modify document.addEventListener('DOMContentLoaded', ...) to include auth checks
+// We will do this in a separate step to ensure all functions are defined.
+
+// The existing sendMessage function might need modification for auth check
+// We will handle this later.
+
+// The existing sendMessage function might need modification for auth check
+// We will handle this later.
  

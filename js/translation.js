@@ -2,6 +2,7 @@ const translations = {
     // General UI elements
     pageTitle: { zh: "llama4中文版 | 国内高速访问与AI模型下载", en: "llama4 Chinese Ver. | High-Speed Access & AI Model Download" },
     privacyPolicyTitle: { zh: "个人信息保护规则 - llama4中文版", en: "Privacy Policy - llama4 Chinese Ver." },
+    loginRequiredMessage: { zh: "您需要登录才能使用此功能。是否立即登录？", en: "You need to log in to use this feature. Log in now?" },
     sidebarAppName: { zh: "llama4", en: "llama4" },
     sidebarLogin: { zh: "点击登录", en: "Login" }, // Text for the link itself
     sidebarLoginText: { zh: "点击登录", en: "Click to Login" }, // Text inside the span for the link
@@ -9,6 +10,17 @@ const translations = {
     sidebarReviews: { zh: "用户评价", en: "User Reviews" },
     historyTitle: { zh: "历史对话", en: "Chat History" },
     newChatButton: { zh: "新对话", en: "New Chat" },
+    profileBackButton: { zh: "返回首页", en: "Back to Home" },
+    profileLogout: { zh: "退出登录", en: "Logout" },
+    profileViewProfile: { zh: "查看信息", en: "View Profile" },
+    profileCardTitle: { zh: "个人信息", en: "Personal Information" },
+    profileNameLabel: { zh: "用户名", en: "Username" },
+    profileEmailLabel: { zh: "邮箱", en: "Email" },
+    profileGoogleIdLabel: { zh: "Google ID", en: "Google ID" },
+    footerHome: { zh: "首页", en: "Home" },
+    footerReviews: { zh: "用户评价", en: "User Reviews" },
+    footerPrivacyPolicy: { zh: "隐私政策", en: "Privacy Policy" },
+    
     // Footer translations
     privacyPolicy: { zh: "个人信息保护规则", en: "Personal information protection rules" },
     icpRecord: { zh: "渝ICP备2025053282号", en: "ICP Record 2025053282" }, // Simplified English, adjust as needed

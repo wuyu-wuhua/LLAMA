@@ -916,6 +916,41 @@ body.page-privacy-policy .site-footer {
     margin-left: 0;
 }
 
+/* Styles for Login and Register pages */
+body.page-login,
+body.page-register {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    justify-content: space-between; /* Push footer to bottom */
+}
+
+body.page-login .container,
+body.page-register .container {
+    display: flex; /* Enable flex for centering auth-container */
+    flex-direction: column; /* Stack children vertically */
+    justify-content: center; /* Center auth-container vertically */
+    align-items: center; /* Center auth-container horizontally */
+    flex-grow: 1; /* Allow container to grow and push footer down */
+    width: 100%; /* Ensure container takes full width */
+    min-height: auto; /* Override general .container min-height */
+}
+
+/* Ensure auth-container itself does not stretch full width if not desired */
+body.page-login .auth-container,
+body.page-register .auth-container {
+    /* max-width can be set here if the auth-container should not be overly wide */
+    /* For now, relying on its internal width or pre-existing .auth-container styles */
+}
+
+body.page-login .site-footer,
+body.page-register .site-footer {
+    width: 100%;
+    margin-left: 0;
+    /* position: relative; /* Ensure it's part of the flow, not absolutely positioned */
+    /* bottom: 0; /* Not needed if using flexbox correctly */
+}
+
 .footer-top-line {
     display: flex;
     justify-content: center; /* 居中对齐 */
@@ -986,10 +1021,17 @@ body.auth-body > .container {
 }
 
 body.auth-body .main-content.auth-page {
-    padding: 0;
+    padding: 30px;
     width: 100%;
     max-width: 500px;
-    margin: 0 auto;
+    margin: 100px auto;
+}
+
+/* Override margins for login/register pages to allow proper flex centering */
+body.page-login .main-content.auth-page,
+body.page-register .main-content.auth-page {
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 .auth-container {
@@ -1501,8 +1543,9 @@ body.auth-body .main-content.auth-page {
     font-size: 32px;
     margin-bottom: 30px;
     text-align: center;
-    position: relative;
+    position: relative; /* Ensure this is set for absolute positioning of child button */
     padding-bottom: 15px;
+    /* Add padding-right to make space for the button if needed, e.g., padding-right: 80px; */
 }
 
 .privacy-policy-content h1:after {
@@ -1658,4 +1701,93 @@ body.auth-body .main-content {
     position: absolute;
     top: 20px; /* Adjust as needed for alignment */
     right: 20px; /* Adjust as needed for alignment */
+}
+
+/* Styles for User Profile in Sidebar */
+.user-profile-sidebar-container {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    margin-bottom: 5px;
+    cursor: pointer;
+    position: relative; /* For dropdown positioning */
+}
+
+.user-profile-sidebar-container:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.user-avatar {
+    width: 2rem; /* 修改/确保 */
+    height: 2rem; /* 修改/确保 */
+    border-radius: 50%; /* 修改/确保 */
+    object-fit: cover; /* 新增，确保图片内容适应圆形 */
+    margin-right: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.3); /* Optional: adds a light border */
+}
+
+.user-avatar-initial {
+    width: 2rem; /* 修改/确保 */
+    height: 2rem; /* 修改/确保 */
+    border-radius: 50%; /* 修改/确保 */
+    display: flex; /* 新增/确保 */
+    align-items: center; /* 新增/确保 */
+    justify-content: center; /* 新增/确保 */
+    color: white; /* 新增/确保 */
+    font-weight: bold;
+    margin-right: 10px;
+    background-color: #cccccc; /* Fallback, JS will override */
+    border: 1px solid rgba(255, 255, 255, 0.3); /* Optional: adds a light border */
+}
+
+.user-name {
+    font-weight: 500;
+    flex-grow: 1; /* Allow name to take space */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.user-dropdown {
+    display: none; /* Hidden by default */
+    position: absolute;
+    top: 100%; /* Position below the user profile container */
+    left: 0;
+    background-color: var(--sidebar-bg); /* Or a slightly darker/lighter shade */
+    background-image: linear-gradient(145deg, #00c6fb 0%, #c39bd3 100%); /* Match sidebar */
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-top: none; /* Avoid double border with container */
+    border-radius: 0 0 var(--border-radius) var(--border-radius);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 110; /* Ensure it's above other sidebar content */
+    min-width: 180px; /* Adjust as needed */
+    padding: 5px 0;
+}
+
+.user-dropdown a {
+    display: block;
+    padding: 8px 15px;
+    color: #f7f9f9; /* Match sidebar text color */
+    text-decoration: none;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+}
+
+.user-dropdown a:hover {
+    background-color: rgba(255, 255, 255, 0.2); /* Slightly lighter for hover */
+}
+
+/* Ensure original login button is hidden correctly if user is logged in */
+.nav-links a.login-btn[style*="display: none"] {
+    /* This rule is mostly for specificity confirmation, JS handles display directly */
+}
+
+#page-particles-js {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1; /* or a very low z-index */
+    /* pointer-events: none; if it should not interfere with mouse */
 }
