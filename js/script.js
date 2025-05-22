@@ -130,7 +130,7 @@ function initImageUpload() {
     if (!imageUploadInput || !imageUploadLabel || !imagePreviewContainer || !imagePreview || !removeImageBtn) {
         return;
     }
-    
+
     imageUploadLabel.onclick = function(e) {
         e.preventDefault(); 
         const loginCheckResult = redirectToLoginIfNeeded();
@@ -335,19 +335,23 @@ document.addEventListener('DOMContentLoaded', function() {
             handleGoogleCallback();
         }
         const googleLoginBtn = document.querySelector('.google-login-btn');
+        console.log('Attempting to find Google login button on login/register page:', googleLoginBtn); // DIAGNOSTIC LOG
         if (googleLoginBtn && typeof handleGoogleLogin === 'function') {
+            console.log('Google login button found, attaching click listener.'); // DIAGNOSTIC LOG
             googleLoginBtn.addEventListener('click', handleGoogleLogin);
+        } else {
+            console.warn('Google login button NOT found or handleGoogleLogin function is missing.'); // DIAGNOSTIC LOG
         }
     } else if (pathname.includes('reviews.html')) {
         if (typeof initDynamicRatings === 'function') {
             initDynamicRatings();
         }
         if (typeof initVerticalMarqueeReviews === 'function') {
-             initVerticalMarqueeReviews();
+        initVerticalMarqueeReviews();
         }
         if (typeof initMarqueeHoverPause === 'function') {
-            initMarqueeHoverPause();
-        }
+        initMarqueeHoverPause();
+    }
     } else if (pathname.includes('privacy-policy.html')) {
         // 隐私政策页面特有的JS初始化（如果有的话）
     }
@@ -361,9 +365,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const loginCheckResult = redirectToLoginIfNeeded();
             if (loginCheckResult.loginRequired) return; // 如果需要登录（无论是否导航），则停止操作
             
-            currentConversationId = null; 
+            currentConversationId = null;
             document.getElementById('chat-messages').innerHTML = ''; 
-            resetChatViewToWelcome(); 
+            resetChatViewToWelcome();
             if (typeof loadChatHistory === 'function') loadChatHistory(); 
         });
     }
@@ -1076,7 +1080,7 @@ function sendMessage(messageText, uploadedFile) {
         responseHandler = (data, lang) => {
             if (data.reply) { // AI Painting API returns image URL in data.reply
                 addMessage(data.reply, 'ai', false, 'image');
-            } else {
+    } else {
                 addMessage(getTranslatedString('aiFailedToGenerateImage', lang) || 'AI未能生成图片，请检查提示词或稍后再试。', 'ai');
                 console.error("API response for aipainting didn't contain data.reply:", data);
             }
@@ -1148,14 +1152,14 @@ function sendMessage(messageText, uploadedFile) {
             };
         } else {
             const body = {
-                message: messageText,
-                scenario: currentScenario,
-                conversationId: currentConversationId
-            };
+            message: messageText,
+            scenario: currentScenario,
+            conversationId: currentConversationId
+        };
             requestOptions = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body)
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
             };
         }
         responseHandler = (data, lang) => {
