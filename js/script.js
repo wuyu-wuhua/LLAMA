@@ -314,6 +314,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // More robust path checking for login and register pages
     const isLoginPage = pathname.endsWith('/login') || pathname.endsWith('/login.html') || pathname.endsWith('/login/');
     const isRegisterPage = pathname.endsWith('/register') || pathname.endsWith('/register.html') || pathname.endsWith('/register/');
+    const isReviewsPage = pathname.endsWith('/reviews') || pathname.endsWith('/reviews.html') || pathname.endsWith('/reviews/'); // ADDED: Robust check for reviews page
 
     if (pathname.includes('index.html') || pathname === '/' || pathname.endsWith('/Llama2-Chinese-main/')) { // 假设这些是首页的路径
         if (typeof updateLoginStateUI === 'function') {
@@ -346,16 +347,24 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             console.warn('Google login button NOT found or handleGoogleLogin function is missing.'); // DIAGNOSTIC LOG
         }
-    } else if (pathname.includes('reviews.html')) {
+    } else if (isReviewsPage) { // MODIFIED: Use robust check for reviews page
+        console.log('On reviews page, attempting to initialize marquee...'); // DIAGNOSTIC LOG
         if (typeof initDynamicRatings === 'function') {
+            console.log('Calling initDynamicRatings'); // DIAGNOSTIC LOG
             initDynamicRatings();
         }
         if (typeof initVerticalMarqueeReviews === 'function') {
-        initVerticalMarqueeReviews();
+            console.log('Calling initVerticalMarqueeReviews'); // DIAGNOSTIC LOG
+            initVerticalMarqueeReviews();
+        } else {
+            console.warn('initVerticalMarqueeReviews function is missing.'); // DIAGNOSTIC LOG
         }
         if (typeof initMarqueeHoverPause === 'function') {
-        initMarqueeHoverPause();
-    }
+            console.log('Calling initMarqueeHoverPause'); // DIAGNOSTIC LOG
+            initMarqueeHoverPause();
+        } else {
+            console.warn('initMarqueeHoverPause function is missing.'); // DIAGNOSTIC LOG
+        }
     } else if (pathname.includes('privacy-policy.html')) {
         // 隐私政策页面特有的JS初始化（如果有的话）
     }
@@ -791,12 +800,33 @@ function animateCount(element, start, end, decimals, duration) {
 }
 
 function initVerticalMarqueeReviews() {
-    const marqueeColumns = [document.getElementById('marquee-column-1'), document.getElementById('marquee-column-2')];
-    if (!marqueeColumns[0] || !marqueeColumns[1]) return;
+    console.log('[Marquee] initVerticalMarqueeReviews called.'); // DIAGNOSTIC
+    const marqueeColumns = [
+        document.getElementById('marquee-column-1'), 
+        document.getElementById('marquee-column-2')
+    ];
+    console.log('[Marquee] Columns found:', marqueeColumns[0], marqueeColumns[1]); // DIAGNOSTIC
+
+    if (!marqueeColumns[0] || !marqueeColumns[1]) {
+        console.warn('[Marquee] One or both marquee columns not found. Aborting init.'); // DIAGNOSTIC
+        return;
+    }
+
     const allReviewsSource = Array.from(document.querySelectorAll('.reviews-grid .review-card'));
-    if (allReviewsSource.length === 0) return;
+    console.log('[Marquee] Found review sources in .reviews-grid:', allReviewsSource.length, allReviewsSource); // DIAGNOSTIC
+
+    if (allReviewsSource.length === 0) {
+        console.warn('[Marquee] No review cards found in .reviews-grid. Marquee will be empty.'); // DIAGNOSTIC
+        // We might still want to clear the columns in case they had placeholder content
+        marqueeColumns.forEach(column => { column.innerHTML = ''; });
+        return;
+    }
+
     const minReviewsPerColumn = 10; 
+    console.log('[Marquee] minReviewsPerColumn:', minReviewsPerColumn); // DIAGNOSTIC
+
     marqueeColumns.forEach((column, colIndex) => {
+        console.log(`[Marquee] Processing column ${colIndex + 1}`); // DIAGNOSTIC
         column.innerHTML = ''; 
         let reviewsForThisColumn = allReviewsSource.filter((_, index) => index % 2 === colIndex);
         if (reviewsForThisColumn.length === 0 && allReviewsSource.length > 0 && colIndex === 0) { // Ensure first column gets some if distribution is uneven and it's empty
@@ -821,11 +851,14 @@ function initVerticalMarqueeReviews() {
         populatedReviews.forEach(reviewCard => { 
             column.appendChild(reviewCard.cloneNode(true));
         });
+        console.log(`[Marquee] Column ${colIndex + 1} populated with ${populatedReviews.length} reviews.`); // DIAGNOSTIC
     });
 }
 
 function initMarqueeHoverPause() {
+    console.log('[Marquee] initMarqueeHoverPause called.'); // DIAGNOSTIC
     const marqueeWrapper = document.querySelector('.marquee-wrapper'); 
+    console.log('[Marquee] Marquee wrapper for hover pause:', marqueeWrapper); // DIAGNOSTIC
     if (marqueeWrapper) {
         marqueeWrapper.addEventListener('mouseenter', () => {
             marqueeWrapper.style.animationPlayState = 'paused';
