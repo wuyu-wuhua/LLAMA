@@ -311,6 +311,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 页面特定初始化
+    // More robust path checking for login and register pages
+    const isLoginPage = pathname.endsWith('/login') || pathname.endsWith('/login.html') || pathname.endsWith('/login/');
+    const isRegisterPage = pathname.endsWith('/register') || pathname.endsWith('/register.html') || pathname.endsWith('/register/');
+
     if (pathname.includes('index.html') || pathname === '/' || pathname.endsWith('/Llama2-Chinese-main/')) { // 假设这些是首页的路径
         if (typeof updateLoginStateUI === 'function') {
             updateLoginStateUI();
@@ -330,7 +334,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (typeof initImageSizeSelector === 'function') {
             initImageSizeSelector();
         }
-    } else if (pathname.includes('login.html') || pathname.includes('register.html')) {
+    } else if (isLoginPage || isRegisterPage) { // MODIFIED: Use the more robust check
         if (typeof handleGoogleCallback === 'function') {
             handleGoogleCallback();
         }
