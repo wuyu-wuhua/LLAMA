@@ -4,6 +4,7 @@ export async function onRequestGet(context) {
     const requestUrl = new URL(request.url);
 
     // Get 'url' and 'redirect_uri' from the client's request query parameters
+    // These parameters are already URL-encoded by the client when they form the query string.
     const clientUrlParam = requestUrl.searchParams.get('url');
     const clientRedirectUriParam = requestUrl.searchParams.get('redirect_uri');
 
@@ -17,8 +18,10 @@ export async function onRequestGet(context) {
     // The external Google login PHP script URL
     const externalAuthUrl = 'https://aa.jstang.cn/google_login.php';
 
-    // Construct the target URL for redirection
-    const targetUrl = `${externalAuthUrl}?url=${encodeURIComponent(clientUrlParam)}&redirect_uri=${encodeURIComponent(clientRedirectUriParam)}`;
+    // Construct the target URL for redirection.
+    // IMPORTANT: Do NOT re-encode clientUrlParam and clientRedirectUriParam here,
+    // as they are already encoded by the client's fetch/window.location.href call.
+    const targetUrl = `${externalAuthUrl}?url=${clientUrlParam}&redirect_uri=${clientRedirectUriParam}`;
     
     // Perform the redirect
     return Response.redirect(targetUrl, 302); // 302 for temporary redirect
