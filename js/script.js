@@ -663,6 +663,16 @@ function addMessage(text, sender, isNewConversationStart = false, messageType = 
         // 让 messageContentDiv 相对定位以放置按钮
         messageContentDiv.style.position = 'relative';
         messageContentDiv.appendChild(downloadBtn);
+    } else if (sender === 'user' && messageType === 'image') {
+        // It's an image from the user
+        const img = document.createElement('img');
+        img.src = text; // text is expected to be a data URL for user images
+        img.alt = getTranslatedString('userUploadedImageAlt') || "User Uploaded Image"; 
+        img.style.maxWidth = '200px'; 
+        img.style.maxHeight = '200px';
+        img.style.borderRadius = '8px';
+        img.style.marginTop = '5px'; // Add some space if there was text before it from the same user turn
+        messageContentDiv.appendChild(img);
     } else {
         let processedText = text;
         if (sender === 'ai' || messageType === 'text') { // Apply <br> for AI text or any explicit text message
@@ -1016,18 +1026,34 @@ function resetChatViewToWelcome() {
     if (generalBtn) generalBtn.classList.add('active');
 }
 
-function sendMessage(messageText, file) {
+function sendMessage(messageText, uploadedFile) {
     // 发送前先显示用户消息
     if (messageText) {
         addMessage(messageText, 'user');
     }
+    // ADDED: Display user-uploaded image immediately
+    if (uploadedFile) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            addMessage(e.target.result, 'user', false, 'image');
+        }
+        reader.readAsDataURL(uploadedFile);
+    }
+
     // AI思考中提示
     addMessage('<i class="fas fa-spinner fa-spin"></i> AI思考中...', 'ai-thinking');
 
-    // 构造请求体
     let url = '';
-    let body = {};
-    let isImage = false;
+    let requestOptions = {};
+    // 定义一个统一的响应处理器结构，具体实现在各个分支中定义
+    let responseHandler = (data, lang) => { // Added lang for getTranslatedString
+        // Default handler, should be overridden
+        if (data.reply) {
+            addMessage(data.reply, 'ai');
+        } else {
+            addMessage(getTranslatedString('aiEmptyReply', lang) || 'AI未返回有效回复。', 'ai');
+        }
+    };
 
     if (currentScenario === 'aipainting') {
         if (!messageText || messageText.trim() === "") {
@@ -1036,28 +1062,113 @@ function sendMessage(messageText, file) {
             return;
         }
         url = BASE_API_URL + '/api/image/generate';
-        body = {
+        const body = {
             prompt: messageText,
             size: currentImageSize,
             scenario: 'aipainting',
             conversationId: currentConversationId
         };
-        isImage = true;
-    } else {
+        requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        };
+        responseHandler = (data, lang) => {
+            if (data.reply) { // AI Painting API returns image URL in data.reply
+                addMessage(data.reply, 'ai', false, 'image');
+            } else {
+                addMessage(getTranslatedString('aiFailedToGenerateImage', lang) || 'AI未能生成图片，请检查提示词或稍后再试。', 'ai');
+                console.error("API response for aipainting didn't contain data.reply:", data);
+            }
+        };
+    } else if (currentScenario === 'imagetoimage') {
+        const imageInputElement = document.getElementById('image-upload-input');
+        const imageFile = imageInputElement && imageInputElement.files && imageInputElement.files[0] ? imageInputElement.files[0] : uploadedFile;
+
+        if (!imageFile) {
+            removeThinkingMessage();
+            addMessage(getTranslatedString('imageRequiredForImageToImage', currentLang) || '请先上传一张图片才能进行以图生图。', 'ai');
+            if (imageInputElement) imageInputElement.value = '';
+            const removeImageBtn = document.getElementById('remove-image-btn');
+            if (removeImageBtn && document.getElementById('image-preview-container').style.display !== 'none') {
+                 removeImageBtn.click();
+            }
+            return;
+        }
+        if (!messageText || messageText.trim() === "") {
+             removeThinkingMessage();
+             addMessage(getTranslatedString('promptRequiredForImageToImage', currentLang) || '请输入图片转换的描述或指令。', 'ai');
+             return;
+        }
+
+        // For debugging: Log file type and name
+        console.log('File Name:', imageFile.name);
+        console.log('File Type:', imageFile.type);
+
+        url = '/api/image-ai-call'; // MODIFIED: Point to the Cloudflare Function proxy
+        const formData = new FormData();
+        const google_id = localStorage.getItem('google_id');
+        formData.append('google_id', google_id || '');
+        formData.append('model_id', '5');
+        formData.append('img', imageFile);
+        formData.append('content', messageText);
+
+        requestOptions = {
+            method: 'POST',
+            body: formData,
+        };
+        responseHandler = (data, lang) => {
+            if (data.data) {
+                addMessage(data.data, 'ai', false, 'image');
+            } else {
+                // Check for specific error message from the API response
+                if (data.msg && data.msg.includes('图片格式不正确')) {
+                    addMessage(getTranslatedString('aiFailedToGenerateImageInvalidFormat', lang) || 'AI未能生成图片：图片格式不正确。请尝试使用JPG或PNG格式的图片。', 'ai');
+                } else {
+                    addMessage(getTranslatedString('aiFailedToGenerateImage', lang) || 'AI未能生成图片，请检查输入或稍后再试。', 'ai');
+                }
+                console.error("API response for imagetoimage (model_id 5) didn't contain data.data:", data);
+            }
+        };
+    } else { // General chat and other text-based scenarios
         url = BASE_API_URL + '/api/chat';
-        body = {
-            message: messageText,
-            scenario: currentScenario,
-            conversationId: currentConversationId
+        if (uploadedFile) {
+            const formData = new FormData();
+            formData.append('message', messageText);
+            formData.append('scenario', currentScenario);
+            if (currentConversationId) {
+                formData.append('conversationId', currentConversationId);
+            }
+            formData.append('image', uploadedFile, uploadedFile.name); // 'image' is a common key for image files
+
+            requestOptions = {
+                method: 'POST',
+                body: formData
+                // Headers are not explicitly set for FormData; browser sets 'Content-Type' to 'multipart/form-data'
+            };
+        } else {
+            const body = {
+                message: messageText,
+                scenario: currentScenario,
+                conversationId: currentConversationId
+            };
+            requestOptions = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            };
+        }
+        responseHandler = (data, lang) => {
+            if (data.reply) {
+                addMessage(data.reply, 'ai');
+            } else {
+                addMessage(getTranslatedString('aiEmptyReply', lang) || 'AI未返回有效回复。', 'ai');
+            }
         };
     }
 
     // 发送请求
-    fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-    })
+    fetch(url, requestOptions)
     .then(res => {
         if (!res.ok && res.status === 500) {
             console.error('Server Error 500:', res);
@@ -1083,13 +1194,7 @@ function sendMessage(messageText, file) {
             return;
         }
 
-        if (isImage && data.reply) {
-            addMessage(data.reply, 'ai', false, 'image');
-        } else if (data.reply) {
-            addMessage(data.reply, 'ai');
-        } else {
-            addMessage(getTranslatedString('aiEmptyReply', currentLang) || 'AI未返回有效回复。', 'ai');
-        }
+        responseHandler(data, currentLang); // Call the appropriate response handler
 
         if (data.conversationId) {
             currentConversationId = data.conversationId;
@@ -1141,12 +1246,8 @@ function handleGoogleLogin() {
     const callbackPage = window.location.pathname.includes('login.html') ? 'login.html' : 'register.html';
     const callback = encodeURIComponent(`${currentOrigin}/${callbackPage}`); // 确保这是您在Google Console中授权的URI
     
-    // 从您的React代码中，url参数似乎是硬编码的 "111.com"，这可能需要根据您的PHP脚本逻辑调整
-    // 如果 "url=" 参数是您的PHP脚本需要的目标主域名，您应该动态获取它或确认该硬编码值
-    // const targetDomainForPHP = extractRootDomain(window.location.origin); // 或者一个配置好的值
-    const targetDomainForPHP = "erlangjiuye.com"; // 保持与您代码一致，但请确认其用途和正确性
-
-    window.location.href = `https://aa.jstang.cn/google_login.php?url=erlangjiuye.com;&redirect_uri=${callback}`;
+    // MODIFIED: Point to the Cloudflare Function proxy, passing original params as query string
+    window.location.href = `/api/google-auth-redirect?url=${encodeURIComponent(currentOrigin)}&redirect_uri=${callback}`;
 }
 
 // 检查用户是否已登录
@@ -1365,4 +1466,91 @@ function redirectToLoginIfNeeded() {
 
 // The existing sendMessage function might need modification for auth check
 // We will handle this later.
+
+// Function to handle image-to-image generation
+async function handleImageGeneration() {
+    const imageInputElement = document.getElementById('imageInput'); // 请确保您有这个ID的input[type=file]元素
+    const styleSelectorElement = document.getElementById('styleSelector'); // 请确保您有这个ID的select或其他输入元素
+    const roomTypeSelectorElement = document.getElementById('roomTypeSelector'); // 请确保您有这个ID的select或其他输入元素
+    const processedImageDisplayElement = document.getElementById('processedImageDisplay'); // 请确保您有这个ID的img元素
+    const generateButton = document.getElementById('generateImageBtn'); // 请确保您有这个ID的按钮元素
+    const loadingIndicator = document.getElementById('loadingIndicator'); // 可选：用于显示加载状态的元素
+    const errorDisplay = document.getElementById('errorDisplay'); // 可选：用于显示错误的元素
+
+    if (!imageInputElement || !imageInputElement.files || imageInputElement.files.length === 0) {
+        if (errorDisplay) errorDisplay.textContent = '请先选择一张图片。';
+        console.error('No image selected.');
+        return;
+    }
+    const selectedImage = imageInputElement.files[0];
+
+    if (!styleSelectorElement || !roomTypeSelectorElement) {
+        if (errorDisplay) errorDisplay.textContent = '风格或房间类型选择器未找到。';
+        console.error('Style or Room Type selector not found.');
+        return;
+    }
+    const selectedStyle = styleSelectorElement.value; // 假设 .value 能获取到选中的值
+    const selectedRoomType = roomTypeSelectorElement.value; // 假设 .value 能获取到选中的值
+
+    if (!selectedStyle || !selectedRoomType) {
+        if (errorDisplay) errorDisplay.textContent = '请选择风格和房间类型。';
+        console.error('Style or Room Type not selected.');
+        return;
+    }
+    
+    if (loadingIndicator) loadingIndicator.style.display = 'block';
+    if (errorDisplay) errorDisplay.textContent = '';
+    if (generateButton) generateButton.disabled = true;
+
+    const formData = new FormData();
+    const google_id = localStorage.getItem('google_id');
+    formData.append('google_id', google_id || '');
+    formData.append('model_id', '5');  // 通义千问的线稿生图API的ID
+    formData.append('img', selectedImage);
+
+    const content = `以${selectedStyle} 风格 设计 ${selectedRoomType}`;
+    formData.append('content', content);
+      
+    try {
+        const response = await fetch('https://aa.jstang.cn/api/ai/call', {
+            method: 'POST',
+            body: formData,
+        });
+ 
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+      
+        const data = await response.json();
+        console.log('API Response:', data);
+
+        if (data && data.data) {
+            if (processedImageDisplayElement) {
+                processedImageDisplayElement.src = data.data;
+                processedImageDisplayElement.style.display = 'block'; //确保图片可见
+            } else {
+                console.error('Processed image display element not found.');
+            }
+        } else {
+            throw new Error('图片URL未在API响应中找到。');
+        }
+
+    } catch (error) {
+        console.error('Error during image generation:', error);
+        if (errorDisplay) errorDisplay.textContent = `图像生成失败: ${error.message}`;
+        if (processedImageDisplayElement) processedImageDisplayElement.style.display = 'none'; // 发生错误时隐藏图片
+    } finally {
+        if (loadingIndicator) loadingIndicator.style.display = 'none';
+        if (generateButton) generateButton.disabled = false;
+    }
+}
+
+// 您需要在您的HTML中，为触发此功能的按钮添加事件监听器
+// 例如:
+// document.addEventListener('DOMContentLoaded', () => {
+//     const generateButton = document.getElementById('generateImageBtn');
+//     if (generateButton) {
+//         generateButton.addEventListener('click', handleImageGeneration);
+//     }
+// });
  

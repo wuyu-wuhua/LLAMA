@@ -1502,7 +1502,7 @@ body.page-register .main-content.auth-page {
 
 .image-size-selector {
     display: flex;
-    gap: 10px;
+    gap: 220px;
     justify-content: flex-start;
     align-items: center;
     margin: 10px 0 0 0;

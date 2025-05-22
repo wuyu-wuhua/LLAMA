@@ -339,6 +339,8 @@ const translations = {
     policyChangesText: { zh: "我们可能会不时更新本个人信息保护规则。更新后的版本将在本页面上发布，并在重大变更时通知您。", en: "We may update this Personal Information Protection Policy from time to time. The updated version will be posted on this page and you will be notified of material changes." },
     contactInfoTitle: { zh: "联系我们", en: "Contact Us" },
     contactInfoText: { zh: "如果您对本个人信息保护规则有任何疑问，请通过以下方式联系我们：ytsgabcde38@2925.com", en: "If you have any questions about this Personal Information Protection Policy, please contact us at: ytsgabcde38@2925.com" },
+    aiFailedToGenerateImageInvalidFormat: { zh: "AI未能生成图片：图片格式不正确。请尝试使用JPG或PNG格式的图片。", en: "AI failed to generate image: Incorrect image format. Please try using JPG or PNG format images." },
+    userUploadedImageAlt: { zh: "用户上传的图片", en: "User Uploaded Image" },
 };
 
 let currentLang = localStorage.getItem('preferredLang') || 'zh'; // Default to Chinese
