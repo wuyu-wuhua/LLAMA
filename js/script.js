@@ -1237,17 +1237,14 @@ function extractRootDomain(url) {
 
 // 处理Google登录点击
 function handleGoogleLogin() {
-    // 使用当前页面的主域名作为回调基础
-    const currentOrigin = window.location.origin;
-    // 重要：确保您的PHP脚本 (google_login.php) 期望接收的是主域名或者您在Google OAuth配置中允许的完整回调URI
-    // 此处假设您的PHP脚本会处理回调并附加参数到您提供的 redirect_uri
-    // 为了安全和准确，回调URI应该与您在Google Cloud Console中注册的完全匹配。
-    // 通常，回调URI是登录发起页面的完整路径，例如 login.html 或 register.html
-    const callbackPage = window.location.pathname.includes('login.html') ? 'login.html' : 'register.html';
-    const callback = encodeURIComponent(`${currentOrigin}/${callbackPage}`); // 确保这是您在Google Console中授权的URI
-    
-    // MODIFIED: Point to the Cloudflare Function proxy, passing original params as query string
-    window.location.href = `/api/google-auth-redirect?url=${encodeURIComponent(currentOrigin)}&redirect_uri=${callback}`;
+    // The redirect_uri should be the current page the user is on when they click login.
+    // This is where Google (after the PHP script) should redirect the user back to.
+    const clientPageUri = window.location.href; 
+
+    // MODIFIED: Point to the Cloudflare Function proxy.
+    // We send the clientPageUri which the function will use as the redirect_uri for the PHP script.
+    // The 'url' parameter for the PHP script will be hardcoded in the Cloudflare Function itself based on your React example.
+    window.location.href = `/api/google-auth-redirect?client_page_uri=${encodeURIComponent(clientPageUri)}`;
 }
 
 // 检查用户是否已登录

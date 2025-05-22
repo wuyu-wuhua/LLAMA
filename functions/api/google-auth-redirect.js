@@ -3,13 +3,12 @@ export async function onRequestGet(context) {
     const { request } = context;
     const requestUrl = new URL(request.url);
 
-    // Get 'url' and 'redirect_uri' from the client's request query parameters
-    // These parameters are already URL-encoded by the client when they form the query string.
-    const clientUrlParam = requestUrl.searchParams.get('url');
-    const clientRedirectUriParam = requestUrl.searchParams.get('redirect_uri');
+    // Get 'client_page_uri' from the client's request query parameters.
+    // This parameter is already URL-encoded by the client.
+    const clientPageUriParam = requestUrl.searchParams.get('client_page_uri');
 
-    if (!clientUrlParam || !clientRedirectUriParam) {
-      return new Response(JSON.stringify({ error: 'Missing url or redirect_uri query parameters' }), {
+    if (!clientPageUriParam) {
+      return new Response(JSON.stringify({ error: 'Missing client_page_uri query parameter' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
       });
@@ -18,10 +17,14 @@ export async function onRequestGet(context) {
     // The external Google login PHP script URL
     const externalAuthUrl = 'https://aa.jstang.cn/google_login.php';
 
+    // This is the fixed 'url' parameter that your PHP script expects (based on your React code example or previous JS code).
+    // Please confirm if 'erlangjiuye.com' is the correct one, or if it should be '111.com' or another specific domain.
+    const fixedUrlParamForPhp = 'erlangjiuye.com'; 
+
     // Construct the target URL for redirection.
-    // IMPORTANT: Do NOT re-encode clientUrlParam and clientRedirectUriParam here,
-    // as they are already encoded by the client's fetch/window.location.href call.
-    const targetUrl = `${externalAuthUrl}?url=${clientUrlParam}&redirect_uri=${clientRedirectUriParam}`;
+    // The clientPageUriParam is used as the redirect_uri for the PHP script and is already encoded.
+    // The fixedUrlParamForPhp needs to be encoded as it's a new component for the query string.
+    const targetUrl = `${externalAuthUrl}?url=${encodeURIComponent(fixedUrlParamForPhp)}&redirect_uri=${clientPageUriParam}`;
     
     // Perform the redirect
     return Response.redirect(targetUrl, 302); // 302 for temporary redirect
